@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmCommentsMapper">
+    <resultMap id="comments" type="com.yomi.community.entity.vo.CommentsVo">
+        <id property="commentId" column="comment_id" />
+        <result property="parentId" column="parent_id" />
+        <result property="name" column="user_name"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="create_time" />
+        <result property="content" column="content"/>
+        <result property="link" column="link"/>
+        <result property="likeNum" column="like_num"/>
+    </resultMap>
+
+    <select id="getLevelOneComments" resultMap="comments">
+        SELECT ym_comments.comment_id,ym_comments.parent_id,ym_user.user_idym_user.user_name,ym_user.avatar,ym_comments.create_time,ym_comments.content,ym_comments.link,ym_comments.like_num FROM `ym_comments`,`ym_user` WHERE target_id=${id} and parent_id="0" and ym_comments.user_id=ym_user.user_id
+    </select>
+    <select id="getLevelTwoComments" resultMap="comments">
+        SELECT ym_comments.comment_id,ym_comments.parent_id,ym_user.user_name,ym_user.avatar,ym_comments.create_time,ym_comments.content,ym_comments.link,ym_comments.like_num FROM `ym_comments`,`ym_user` WHERE parent_id=${id} and ym_comments.user_id=ym_user.user_id
+    </select>
+
+    <delete id="removeComment">
+        delete from ym_comments where comment_id=${commentId};
+    </delete>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmFansMapper">
+    <update id="updateFans" parameterType="com.yomi.community.entity.YmFans">
+        UPDATE ym_fans
+        SET is_deleted='0',
+            update_time='${@com.yomi.common_utils.time.TimeUtils@getTime()}'
+        WHERE user_id = #{userId}
+          AND answer_user_id = #{answerUserId}
+          AND is_deleted = '1'
+    </update>
+
+    <select id="selectFans" resultType="int">
+        select count(1)
+        from ym_fans
+        where user_id = #{userId}
+          and answer_user_id = #{answerUserId}
+    </select>
+
+    <delete id="deleteFansData">
+        delete
+        from ym_fans
+        where is_deleted = '1'
+    </delete>
+
+    <resultMap id="UserInfoVo" type="com.yomi.community.entity.vo.UserInfoVo">
+        <id property="userId" column="user_id" />
+        <result property="id" column="query_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="classId" column="class_id" />
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="signature" column="signature"/>
+        <result property="fansNum" column="fans_num"/>
+        <result property="sex" column="sex"/>
+        <result property="isDisabled" column="is_disabled"/>
+        <result property="online" column="online"/>
+        <result property="avatar" column="avatar"/>
+        <result property="notice" column="notice"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+
+    <select id="findByIds" resultMap="UserInfoVo" >
+        SELECT ym_user.user_id,ym_query_user.query_id,ym_user.user_name,ym_user.class_id,ym_user.phone_number,ym_user.signature,ym_user.fans_num,ym_user.sex,ym_user.is_deleted,ym_user.`online`,ym_user.avatar,ym_user.`notice`,ym_user.create_time,ym_user.update_time FROM `ym_query_user`,`ym_user`
+        <where>
+            ym_query_user.user_id = ym_user.user_id AND ym_user.user_id in
+            <foreach item="item" index="index" collection="ids"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+    <select id="getOneFans" resultType="com.yomi.community.entity.YmFans">
+        SELECT * FROM ym_fans where user_id=${userId} and answer_user_id=${id}
+    </select>
+    <update id="attention" >
+        update ym_fans set is_deleted = '1' where fans_id=${fansId}
+    </update>
+
+    <update id="noAttention">
+        update ym_fans set is_deleted = '0' where fans_id=${fansId}
+    </update>
+    <select id="queryUserId" resultType="com.yomi.community.entity.YmQueryUser">
+        SELECT * FROM ym_query_user
+        <where>
+            user_id in
+            <foreach item="item" index="index" collection="collect"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+</mapper>

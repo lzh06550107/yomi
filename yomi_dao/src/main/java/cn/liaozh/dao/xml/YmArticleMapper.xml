@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmArticleMapper">
+
+    <resultMap id="ymArticle" type="com.yomi.community.entity.YmArticle">
+        <id column="article_id" property="articleId"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="special" property="special"/>
+        <result column="comment_num" property="commentNum"/>
+        <result column="views_num" property="viewsNum"/>
+        <result column="share_num" property="shareNum"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+
+    <select id="getAllSearch" resultMap="ymArticle">
+        select *
+        from ym_article
+        where is_deleted = '0'
+          and (title like concat('%', #{str}, '%') or title like concat('%', #{str}, '%'))
+        order by create_time desc
+            limit #{page}, 10
+    </select>
+
+    <select id="getArticleCount" resultType="java.lang.Integer">
+        select count(*)
+        from ym_article
+        where is_deleted = '0'
+          and (title like concat('%', #{str}, '%') or title like concat('%', #{str}, '%'))
+    </select>
+    <select id="getContentTips" resultType="com.yomi.community.entity.vo.IntactArticleDTO">
+        select *
+        from ym_article a LEFT JOIN ym_intact_article ia ON ia.article_id = a.article_id
+        where title like concat('%', #{content}, '%') AND ia.is_deleted = '0' AND ia.private_state = '0'
+        GROUP BY a.article_id
+        ORDER BY a.comment_num, a.like_num DESC LIMIT 10
+    </select>
+</mapper>

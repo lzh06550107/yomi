@@ -1,0 +1,77 @@
+server:
+  port: 8001
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jackson:
+    date-format: yyyy-FMM-dd HH:mm:ss
+    time-zone: GMT+8
+  application:
+    name: service_yomi
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/yomi?serverTimezone=GMT%2B8&characterEncoding=UTF-8
+    username: root
+    password: root
+    druid:
+      filters: stat,wall
+      stat-view-servlet:
+        login-username: yomi
+        login-password: 666
+        reset-enable: false
+        url-pattern: /druid/*
+        allow: 10.2.5.2,10.2.5.1,10.2.5.10
+        enabled: true
+      web-stat-filter:
+        # 启动 StatFilter
+        enabled: true
+        # 过滤所有 url
+        url-pattern: /*
+        # 排除一些不必要的url
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        # 开启 session 统计功能
+        session-stat-enable: true
+        # session 的最大个数，默认100
+        session-stat-max-count: 1000
+      ## 配置 StatViewServlet（监控页面），用于展示 Druid 的统计信息
+      initial-size: 5
+      #最小连接池数量
+      min-idle: 5
+      #最大连接池数量 maxIdle已经不再使用
+      max-active: 20
+      #获取连接时最大等待时间，单位毫秒
+      max-wait: 60000
+      #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      #既作为检测的间隔时间又作为testWhileIdel执行的依据
+      time-between-eviction-runs-millis: 60000
+      #销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      min-evictable-idle-time-millis: 30000
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+  #      aop-patterns: "com.yomi.*"
+#  redis:
+#    host: 101.42.93.57
+#    port: 6379
+#    password: '0303'
+mybatis-plus:
+  mapper-locations: classpath:com/yomi/community/mapper/xml/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  helper-dialect: mysql
+  pageSizeZero: true
+  params: count=countSql
+  support-methods-arguments: true
+
+wechat:
+  appid: "wxd751b9be3d3f65b6"
+  secret: "53ab5c5e906a78a5515573459f8717f7"

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmIntactGoodsMapper">
+
+    <resultMap id="CommodityVo" type="com.yomi.community.entity.vo.CommodityVo">
+        <id property="intactGoodsId" column="intact_goods_id" />
+        <result property="userName" column="user_name"/>
+        <result property="avatar" column="avatar" />
+        <result property="familyName" column="family_name"/>
+        <result property="goodsName" column="goods_name" />
+        <result property="goodsDescribe" column="goods_describe"/>
+        <result property="goodsPrice" column="goods_price"/>
+        <result property="createTime" column="create_time"/>
+        <result property="goodsImage" column="goods_image"/>
+    </resultMap>
+
+    <resultMap id="CommodityVos" type="com.yomi.community.entity.vo.CommodityVos">
+        <id property="intactGoodsId" column="intact_goods_id" />
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="avatar" column="avatar" />
+        <result property="familyName" column="family_name"/>
+        <result property="goodsName" column="goods_name" />
+        <result property="goodsDescribe" column="goods_describe"/>
+        <result property="goodsPrice" column="goods_price"/>
+        <result property="createTime" column="create_time"/>
+        <result property="goodsImage" column="goods_image"/>
+    </resultMap>
+
+    <select id="getGoods" resultMap="CommodityVos" >
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id  and ym_intact_goods.is_deleted=0
+    </select>
+    <select id="hottestCommodity" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id  and ym_intact_goods.is_deleted=0 order by ym_goods.create_time+0 desc
+    </select>
+
+    <select id="highestCommodity" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id and ym_intact_goods.is_deleted=0  order by ym_goods.goods_price desc
+    </select>
+
+    <select id="lowestCommodity" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image  FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id and ym_intact_goods.is_deleted=0 order by ym_goods.goods_price asc
+    </select>
+
+    <select id="getOneGoods" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id and ym_intact_goods.is_deleted=0 and ym_intact_goods.intact_goods_id=${id}
+    </select>
+
+    <select id="getOneselfGoods" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id and ym_intact_goods.user_id=#{userId} and  ym_intact_goods.is_deleted=0
+    </select>
+
+    <select id="searchAll" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family
+        <where>
+            ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id  and ym_intact_goods.is_deleted=0 and ym_intact_goods.intact_goods_id in
+            <foreach item="item" index="index" collection="strings"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+
+        </where>
+    </select>
+    <insert id="insertIdeaFeedback">
+        insert into ym_ideafeedback values(null,#{str},#{userId},#{time})
+    </insert>
+
+    <select id="familyQuery" resultMap="CommodityVos">
+        SELECT ym_intact_goods.intact_goods_id,ym_intact_goods.user_id,ym_user.avatar,ym_user.user_name,ym_commodity_family.family_name,ym_goods.goods_name,ym_goods.goods_describe,ym_goods.goods_price,ym_goods.create_time,ym_goods.goods_image FROM ym_intact_goods,ym_user,ym_goods,ym_commodity_family WHERE ym_intact_goods.family_id=ym_commodity_family.family_id and ym_intact_goods.goods_id=ym_goods.goods_id and ym_intact_goods.user_id=ym_user.user_id and ym_intact_goods.family_id=${familyId} and  ym_intact_goods.is_deleted=0  </select>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmUserMapper">
+    <update id="updateFansNum">
+        UPDATE ym_user
+        <set>
+            <if test="flagNum==1">fans_num = fans_num + 1</if>
+            <if test="flagNum==2">fans_num = fans_num - 1</if>
+        </set>
+        ,update_time='${@com.yomi.common_utils.time.TimeUtils@getTime()}'
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="getUserById" resultMap="YmUser">
+        select * from ym_user where is_deleted = '0' and user_id = #{userId}
+    </select>
+
+    <resultMap id="YmUser" type="com.yomi.community.entity.YmUser">
+        <id property="userId" column="user_id" />
+        <result property="openId" column="open_id"/>
+        <result property="signature" column="signature"/>
+        <result property="userName" column="user_name"/>
+        <result property="classId" column="class_id" />
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="fansNum" column="fans_num"/>
+        <result property="sex" column="sex"/>
+        <result property="isDisabled" column="is_disabled"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="online" column="online"/>
+        <result property="wxNum" column="wx_num"/>
+        <result property="qqNum" column="qq_num"/>
+        <result property="avatar" column="avatar"/>
+        <result property="notice" column="notice"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+    </resultMap>
+
+
+    <resultMap id="UserSort" type="com.yomi.community.entity.vo.UserSort">
+        <id property="userId" column="user_id" />
+        <result property="id" column="query_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="classId" column="class_id" />
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="signature" column="signature"/>
+        <result property="fansNum" column="fans_num"/>
+        <result property="sex" column="sex"/>
+        <result property="isDisabled" column="is_disabled"/>
+        <result property="online" column="online"/>
+        <result property="avatar" column="avatar"/>
+        <result property="notice" column="notice"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+
+    <!--    <select id="getUserList"  resultMap="UserSort">-->
+    <!--        SELECT ym_user.user_id,ym_query_user.query_id,ym_user.user_name,ym_user.class_id,ym_user.phone_number,ym_user.signature,ym_user.fans_num,ym_user.sex,ym_user.is_deleted,ym_user.`online`,ym_user.avatar,ym_user.`notice`,ym_user.create_time,ym_user.update_time FROM `ym_query_user`,`ym_user` WHERE ym_query_user.user_id = ym_user.user_id-->
+    <!--    </select>-->
+</mapper>

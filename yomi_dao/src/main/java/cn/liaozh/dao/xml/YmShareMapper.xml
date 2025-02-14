@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmShareMapper">
+    <insert id="insertShare" parameterType="com.yomi.community.entity.YmShare">
+        INSERT INTO ym_share (share_id,
+                              article_id,
+                              user_id,
+                              share_target)
+        SELECT #{shareId},#{articleId},#{userId},#{shareTarget} FROM DUAL WHERE NOT EXISTS(
+            SELECT article_id,user_id FROM ym_share WHERE article_id=#{articleId} AND user_id=#{userId})
+    </insert>
+</mapper>

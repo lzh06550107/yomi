@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmIntactArticleMapper">
+
+    <resultMap id="ymIntactArticle" type="com.yomi.community.entity.YmIntactArticle">
+        <id column="intact_article_id" property="intactArticleId"/>
+        <result column="article_id" property="articleId"/>
+        <result column="user_id" property="userId"/>
+        <result column="family_id" property="familyId"/>
+        <result column="article_image_id" property="articleImageId"/>
+        <result column="private_state" property="privateState"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <select id="getArticle" resultType="Integer">
+        select intact_article_id
+        from ym_intact_article
+    </select>
+
+    <select id="getUser" resultType="Integer">
+        select user_id
+        from ym_intact_article
+    </select>
+    <select id="getFamily" resultType="Integer">
+        select family_id
+        from ym_intact_article
+    </select>
+    <select id="getImage" resultType="Integer">
+        select intact_image_id
+        from ym_intact_article
+    </select>
+
+    <select id="getIntactArticle" resultMap="ymIntactArticle">
+        select *
+        from ym_intact_article
+        where is_deleted = '0'
+          and article_id = #{articleId}
+          and private_state = '0';
+    </select>
+    <select id="selectMapByArticleNum" resultType="java.lang.String">
+        SELECT user_id
+        FROM ym_intact_article
+        GROUP BY user_id
+        ORDER BY COUNT(intact_article_id) DESC LIMIT 30
+    </select>
+
+</mapper>

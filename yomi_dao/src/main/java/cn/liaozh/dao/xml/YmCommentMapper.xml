@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.liaozh.dao.YmCommentMapper">
+    <update id="updateLike">
+        update ym_comment
+        <set>
+            <if test="num == 0">comment_num=comment_num+1,</if>
+            <if test="num == 1">comment_num=comment_num-1,</if>
+            update_time='${@com.yomi.common_utils.time.TimeUtils@getTime()}'
+        </set>
+        where comment_id = #{commentId} and is_deleted = 0
+    </update>
+
+
+    <select id="findAllComment" resultType="com.yomi.community.entity.vo.TwoComment">
+        select c.comment_id,
+        c.content,
+        c.comment_num,
+        c.type,
+        u.user_id,
+        u.user_name,
+        u.avatar
+        from ym_comment c left JOIN ym_user u on c.user_id = u.user_id
+        WHERE c.comment_id  in
+        <foreach collection="list" item="commentId" open="(" close=")" separator=",">
+            #{commentId}
+        </foreach>
+        and c.is_deleted=0
+    </select>
+
+    <select id="findAllOneComment" resultType="com.yomi.community.entity.vo.TwoComment">
+        select c.comment_id,
+               c.content,
+               c.comment_num,
+               c.create_time,
+               c.parent_id,
+               c.type,
+               u.user_id,
+               u.user_name,
+               u.avatar
+        from ym_comment c left JOIN ym_user u on c.user_id = u.user_id
+        WHERE c.article_id =#{articleId} and c.is_deleted = 0 and c.parent_id = 0
+    </select>
+
+    <select id="findAllTwoComment" resultType="com.yomi.community.entity.vo.TwoComment">
+        select c.comment_id,
+               c.content,
+               c.comment_num,
+               c.create_time,
+               c.parent_id,
+               c.type,
+               u.user_id,
+               u.user_name,
+               u.avatar
+        from ym_comment c left JOIN ym_user u on c.user_id = u.user_id
+        WHERE c.article_id =#{articleId} and c.is_deleted = 0 and c.parent_id != 0
+    </select>
+</mapper>
