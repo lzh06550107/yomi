@@ -47,9 +47,6 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
     @Autowired
     private StringUtils stringUtils;
 
-    public YmCommentServiceImpl() {
-    }
-
     @Transactional(
             rollbackFor = {Exception.class}
     )
@@ -61,24 +58,24 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
     }
 
     public Page<CommentsVo> queryOneComment(String userId, String articleId, Integer page) {
-        Page<CommentsVo> userInfoVoPage = new Page();
+        Page<CommentsVo> userInfoVoPage = new Page<>();
         YmIntactArticle ymIntactArticle = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIntactArticleId, articleId).one();
         String user = ymIntactArticle.getUserId();
         List<String> commentIds = this.commentService.lambdaQuery().eq(YmComment::getIsDeleted, "0").eq(YmComment::getParentId, "0").eq(YmComment::getUserId, user).eq(YmComment::getArticleId, articleId).list().stream().map(YmComment::getCommentId).collect(Collectors.toList());
         List<YmComment> hotComment = this.commentService.lambdaQuery().eq(YmComment::getIsDeleted, "0").eq(YmComment::getParentId, "0").eq(YmComment::getArticleId, articleId).ne(YmComment::getUserId, user).list();
-        Map<String, Double> map = new HashMap();
+        Map<String, Double> map = new HashMap<>();
 
-        for(YmComment comment : hotComment) {
-            map.put(comment.getCommentId(), (double)comment.getLikeNum() * 0.3 + (double)((int)this.getTowLevelCommentNum(userId, articleId, comment.getCommentId(), page).getTotal()) * 0.7);
+        for (YmComment comment : hotComment) {
+            map.put(comment.getCommentId(), (double) comment.getLikeNum() * 0.3 + (double) ((int) this.getTowLevelCommentNum(userId, articleId, comment.getCommentId(), page).getTotal()) * 0.7);
         }
 
-        List<Map.Entry<String, Double>> entries = map.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).filter((r) -> (Double)r.getValue() != (double)0.0F).collect(Collectors.toList());
+        List<Map.Entry<String, Double>> entries = map.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).filter((r) -> (Double) r.getValue() != (double) 0.0F).collect(Collectors.toList());
         if (entries.size() >= 3) {
             entries = entries.subList(0, 3);
         }
 
-        if (entries.size() > 0) {
-            commentIds.addAll(entries.stream().map((r) -> (String)r.getKey()).collect(Collectors.toList()));
+        if (!entries.isEmpty()) {
+            commentIds.addAll(entries.stream().map((r) -> (String) r.getKey()).collect(Collectors.toList()));
         }
 
         List<String> otherCommentIds = this.commentService.lambdaQuery()
@@ -97,11 +94,11 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
         builder.append("order by field(comment_id,");
         int length = commentIds.size();
 
-        for(int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; ++i) {
             if (i == 0) {
-                builder.append((String)commentIds.get(i));
+                builder.append(commentIds.get(i));
             } else {
-                builder.append(",").append((String)commentIds.get(i));
+                builder.append(",").append(commentIds.get(i));
             }
 
             if (i == length - 1) {
@@ -109,64 +106,64 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
             }
         }
 
-        if (commentIds.size() == 0) {
-            return userInfoVoPage;
-        } else {
-            Page<YmComment> ymCommentPage = this.commentService.lambdaQuery().in(YmComment::getCommentId, commentIds).last(builder.toString()).page(new Page((long)page, 20L));
-            Set<String> users = ymCommentPage.getRecords().stream().map(YmComment::getUserId).collect(Collectors.toSet());
-            List<YmUser> ymUsers = this.userService.lambdaQuery().in(YmUser::getUserId, users).list();
-            List<String> ymCommentLikes = this.commentLikeService.lambdaQuery().eq(YmCommentLike::getUserId, userId).eq(YmCommentLike::getLikeState, "0").list().stream().map(YmCommentLike::getCommentId).collect(Collectors.toList());
-            List<CommentsVo> vos = ymCommentPage.getRecords().stream().map((r) -> {
-                CommentsVo commentsVo = new CommentsVo();
-                BeanUtils.copyProperties(r, commentsVo);
-                List<YmUser> collect = ymUsers.stream().filter((ymUser) -> ymUser.getUserId().equals(commentsVo.getUserId())).collect(Collectors.toList());
-                if (collect.size() != 0) {
-                    YmUser u = collect.get(0);
-                    commentsVo.setUserName(u.getUserName());
-                    commentsVo.setAvatar(u.getAvatar());
-                    commentsVo.setCommentsNum((int)this.getTowLevelCommentNum(userId, articleId, commentsVo.getCommentId(), page).getTotal());
-                    commentsVo.setStatus(ymCommentLikes.contains(r.getCommentId()));
-                }
-
-                return commentsVo;
-            }).collect(Collectors.toList());
-            Integer rowNum = this.commentService.lambdaQuery().eq(YmComment::getIsDeleted, "0").eq(YmComment::getArticleId, articleId).count();
-            userInfoVoPage.setRecords(vos);
-            userInfoVoPage.setSize(20L);
-            userInfoVoPage.setTotal((long)rowNum);
+        if (commentIds.isEmpty()) {
             return userInfoVoPage;
         }
+
+        Page<YmComment> ymCommentPage = this.commentService.lambdaQuery().in(YmComment::getCommentId, commentIds).last(builder.toString()).page(new Page((long) page, 20L));
+        Set<String> users = ymCommentPage.getRecords().stream().map(YmComment::getUserId).collect(Collectors.toSet());
+        List<YmUser> ymUsers = this.userService.lambdaQuery().in(YmUser::getUserId, users).list();
+        List<String> ymCommentLikes = this.commentLikeService.lambdaQuery().eq(YmCommentLike::getUserId, userId).eq(YmCommentLike::getLikeState, "0").list().stream().map(YmCommentLike::getCommentId).collect(Collectors.toList());
+        List<CommentsVo> vos = ymCommentPage.getRecords().stream().map((r) -> {
+            CommentsVo commentsVo = new CommentsVo();
+            BeanUtils.copyProperties(r, commentsVo);
+            List<YmUser> collect = ymUsers.stream().filter((ymUser) -> ymUser.getUserId().equals(commentsVo.getUserId())).collect(Collectors.toList());
+            if (collect.size() != 0) {
+                YmUser u = collect.get(0);
+                commentsVo.setUserName(u.getUserName());
+                commentsVo.setAvatar(u.getAvatar());
+                commentsVo.setCommentsNum((int) this.getTowLevelCommentNum(userId, articleId, commentsVo.getCommentId(), page).getTotal());
+                commentsVo.setStatus(ymCommentLikes.contains(r.getCommentId()));
+            }
+
+            return commentsVo;
+        }).collect(Collectors.toList());
+        Integer rowNum = this.commentService.lambdaQuery().eq(YmComment::getIsDeleted, "0").eq(YmComment::getArticleId, articleId).count();
+        userInfoVoPage.setRecords(vos);
+        userInfoVoPage.setSize(20L);
+        userInfoVoPage.setTotal((long) rowNum);
+        return userInfoVoPage;
+
     }
 
     public Page<YmComment> getTowLevelCommentNum(String userId, String articleId, String commentId, Integer page) {
-        QueryWrapper<YmComment> wrapper = new QueryWrapper();
+        QueryWrapper<YmComment> wrapper = new QueryWrapper<>();
         List<YmComment> ymCommentList = this.lambdaQuery().eq(YmComment::getArticleId, articleId).eq(YmComment::getParentId, commentId).list();
-        ArrayList<String> commentIdList = new ArrayList();
-        if (ymCommentList.size() == 0) {
-            return new Page();
+        ArrayList<String> commentIdList = new ArrayList<>();
+        if (ymCommentList.isEmpty()) {
+            return new Page<>();
         } else {
             this.cycleGetCommentId(ymCommentList, commentIdList);
-           wrapper.lambda().eq(YmComment::getArticleId, articleId).eq(YmComment::getParentId, commentId).or().in(YmComment::getParentId, commentIdList);
-            Page<YmComment> ymFansPage = new Page((long)page, 3L);
-            Page<YmComment> ymFansIPages = this.baseMapper.selectPage(ymFansPage, wrapper);
-            return ymFansIPages;
+            wrapper.lambda().eq(YmComment::getArticleId, articleId).eq(YmComment::getParentId, commentId).or().in(YmComment::getParentId, commentIdList);
+            Page<YmComment> ymFansPage = new Page<>((long) page, 3L);
+            return this.baseMapper.selectPage(ymFansPage, wrapper);
         }
     }
 
     public Page<CommentsVo> queryTwoComment(String userId, String articleId, String commentId, Integer page) {
-        Page<CommentsVo> userInfoVoPage = new Page();
-        QueryWrapper<YmComment> wrapper = new QueryWrapper();
+        Page<CommentsVo> userInfoVoPage = new Page<>();
+        QueryWrapper<YmComment> wrapper = new QueryWrapper<>();
         List<YmComment> ymCommentList = this.lambdaQuery().eq(YmComment::getArticleId, articleId).eq(YmComment::getParentId, commentId).list();
-        ArrayList<String> commentIdList = new ArrayList();
-        if (ymCommentList.size() == 0) {
+        ArrayList<String> commentIdList = new ArrayList<>();
+        if (ymCommentList.isEmpty()) {
             return userInfoVoPage;
         } else {
             this.cycleGetCommentId(ymCommentList, commentIdList);
             wrapper.lambda().eq(YmComment::getArticleId, articleId).eq(YmComment::getParentId, commentId).or().in(YmComment::getParentId, commentIdList).orderBy(true, false, YmComment::getLikeNum, YmComment::getCreateTime);
             List<YmComment> list = this.list(wrapper);
-            Page<YmComment> ymFansPage = new Page((long)page, 3L);
+            Page<YmComment> ymFansPage = new Page<>((long) page, 3L);
             Page<YmComment> ymFansIPages = this.baseMapper.selectPage(ymFansPage, wrapper);
-            if (ymFansIPages.getRecords().size() == 0) {
+            if (ymFansIPages.getRecords().isEmpty()) {
                 BeanUtils.copyProperties(ymFansIPages, userInfoVoPage);
                 return userInfoVoPage;
             } else {
@@ -213,7 +210,7 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
         List<TwoComment> allOneComment = this.ymCommentMapper.findAllOneComment(articleId);
         List<TwoComment> allTwoComment = this.ymCommentMapper.findAllTwoComment(articleId);
 
-        for(TwoComment ymComment : allOneComment) {
+        for (TwoComment ymComment : allOneComment) {
             OneComment oneComment = new OneComment();
             List<TwoComment> twoCommentList = allTwoComment.stream().filter((twoComment) -> ymComment.getCommentId().equals(twoComment.getParentId())).collect(Collectors.toList());
             BeanUtils.copyProperties(ymComment, oneComment);
@@ -241,7 +238,7 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
 
     @Transactional
     public boolean removeTwoComment(String commentId, String userId) {
-        QueryWrapper<YmComment> qw = new QueryWrapper();
+        QueryWrapper<YmComment> qw = new QueryWrapper<>();
         qw.eq("comment_id", commentId);
         qw.eq("user_id", userId);
         YmComment ymComment = this.commentService.lambdaQuery().eq(YmComment::getCommentId, commentId).one();
@@ -269,10 +266,10 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
         );
 
         Page<YmComment> towLevelCommentNum = this.getTowLevelCommentNum(userId, article.getIntactArticleId(), commentId, 1);
-        int num = (long)((int)towLevelCommentNum.getTotal()) == 0L ? 1 : (int)towLevelCommentNum.getTotal() + 1;
+        int num = (long) ((int) towLevelCommentNum.getTotal()) == 0L ? 1 : (int) towLevelCommentNum.getTotal() + 1;
         List<String> list = towLevelCommentNum.getRecords().stream().map(YmComment::getCommentId).collect(Collectors.toList());
-        if (list.size() != 0) {
-            QueryWrapper<YmComment> qr = new QueryWrapper();
+        if (!list.isEmpty()) {
+            QueryWrapper<YmComment> qr = new QueryWrapper<>();
             qr.in("comment_id", list);
             this.commentService.remove(qr);
         }
@@ -317,7 +314,7 @@ public class YmCommentServiceImpl extends MPJBaseServiceImpl<YmCommentMapper, Ym
 
     public void saveCommentImgParent(MultipartFile file, String commentId, String userId) {
         String originalFilename = UploadUtils.uploadLocalFileAvatar(file);
-        YmComment comment = (YmComment)((LambdaQueryChainWrapper)this.commentService.lambdaQuery().eq(YmComment::getCommentId, commentId)).one();
+        YmComment comment = this.commentService.lambdaQuery().eq(YmComment::getCommentId, commentId).one();
         YmComment ymComment = new YmComment();
         ymComment.setArticleId(comment.getArticleId());
         ymComment.setParentId(commentId);

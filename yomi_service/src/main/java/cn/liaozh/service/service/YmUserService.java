@@ -1,20 +1,13 @@
 package cn.liaozh.service.service;
 
 import cn.liaozh.pojo.YmUser;
+import cn.liaozh.pojo.vo.*;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.base.MPJBaseService;
 
 import java.util.List;
 import java.util.Map;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import cn.liaozh.pojo.YmUser;
-import cn.liaozh.pojo.vo.CommodityVos;
-import cn.liaozh.pojo.vo.FullUserVo;
-import cn.liaozh.pojo.vo.ModifyUserInfoVo;
-import cn.liaozh.pojo.vo.StrInfoVo;
-import cn.liaozh.pojo.vo.UpdateGoodsVo;
-import cn.liaozh.pojo.vo.UserInfoVo;
-import cn.liaozh.pojo.vo.UserSort;
 
 public interface YmUserService extends MPJBaseService<YmUser> {
 

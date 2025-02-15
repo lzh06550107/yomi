@@ -39,6 +39,7 @@ import java.util.UUID;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final Logger log = LoggerFactory.getLogger(AccountServiceImpl.class);
+
     @Autowired
     private YmUserService userService;
     @Autowired
@@ -54,13 +55,11 @@ public class AccountServiceImpl implements AccountService {
     @Value("${wechat.secret}")
     private String secret;
 
-    public AccountServiceImpl() {
-    }
-
     @Transactional(
             rollbackFor = {ArithmeticException.class}
     )
     public LoginUserVo loginUser(WxLoginVo loginVo) throws IOException {
+
         LoginUserVo loginUserVo = new LoginUserVo();
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         url = url + "?appid=" + this.appid;
@@ -90,80 +89,103 @@ public class AccountServiceImpl implements AccountService {
 
         if (!userNotExist && "1".equals(user.getIsDisabled())) {
             throw new YmException(ExecutionResult.USER_CODE_102);
-        } else if (!saveFlag && userNotExist) {
-            throw new YmException(ExecutionResult.DATA_CODE_301);
-        } else {
-            return this.setUserData(loginUserVo, user);
         }
+
+        if (!saveFlag && userNotExist) {
+            throw new YmException(ExecutionResult.DATA_CODE_301);
+        }
+
+        return this.setUserData(loginUserVo, user);
+
     }
 
     public boolean register(LoginParams params) {
+
         String code = params.getCaptcha();
         String email = params.getEmail();
         String password = params.getPassword();
+
         if (password.length() < 6) {
             throw new YmException(ExecutionResult.USER_CODE_111);
-        } else {
-            boolean isValidation = this.validationCaptcha(new YmCaptcha(email, code), true);
-            YmUser user = this.userService.lambdaQuery().eq(YmUser::getEmail, email).one();
-            if (!Objects.isNull(user)) {
-                throw new YmException(ExecutionResult.USER_CODE_109);
-            } else if (!password.equals(params.getConfirmPwd())) {
-                throw new YmException(ExecutionResult.USER_CODE_108);
-            } else if (isValidation) {
-                YmUser userData = new YmUser();
-                userData.setEmail(email).setPassword(EncryptUtil.MD5(password));
-                return this.userService.save(userData);
-            } else {
-                return false;
-            }
         }
+
+        boolean isValidation = this.validationCaptcha(new YmCaptcha(email, code), true);
+        YmUser user = this.userService.lambdaQuery().eq(YmUser::getEmail, email).one();
+        if (!Objects.isNull(user)) {
+            throw new YmException(ExecutionResult.USER_CODE_109);
+        }
+
+        if (!password.equals(params.getConfirmPwd())) {
+            throw new YmException(ExecutionResult.USER_CODE_108);
+        }
+
+        if (isValidation) {
+            YmUser userData = new YmUser();
+            userData.setEmail(email);
+            userData.setPassword(EncryptUtil.MD5(password));
+            return this.userService.save(userData);
+        } else {
+            return false;
+        }
+
     }
 
     public boolean captcha(String email) {
+
         if (!this.mailUtils.checkEmail(email)) {
             throw new YmException(ExecutionResult.REQUEST_CODE_401);
-        } else {
-            long time = System.currentTimeMillis() - 180000L;
-            List<YmCaptcha> captchaList = this.captchaService.lambdaQuery().eq(YmCaptcha::getEmail, email).ge(YmCaptcha::getCreateTime, time).list();
-            if (!captchaList.isEmpty()) {
-                throw new YmException(ExecutionResult.CAPTCHA_CODE_404);
-            } else {
-                String code = this.mailUtils.generateVerifyCode(6);
-                YmCaptcha captcha = (new YmCaptcha()).setEmail(email).setCode(code);
-                return this.captchaService.save(captcha) && this.mailUtils.sendAuthCodeEmail(captcha);
-            }
         }
+
+        long time = System.currentTimeMillis() - 180000L;
+        List<YmCaptcha> captchaList = this.captchaService.lambdaQuery().eq(YmCaptcha::getEmail, email).ge(YmCaptcha::getCreateTime, time).list();
+        if (!captchaList.isEmpty()) {
+            throw new YmException(ExecutionResult.CAPTCHA_CODE_404);
+        }
+
+        String code = this.mailUtils.generateVerifyCode(6);
+        YmCaptcha captcha = new YmCaptcha();
+        captcha.setEmail(email);
+        captcha.setCode(code);
+        return this.captchaService.save(captcha) && this.mailUtils.sendAuthCodeEmail(captcha);
+
     }
 
     public LoginUserVo pwdLogin(LoginParams params) {
+
         String email = params.getEmail();
+
         if (!this.mailUtils.checkEmail(email)) {
             throw new YmException(ExecutionResult.REQUEST_CODE_401);
-        } else {
-            String captcha = params.getCaptcha();
-            this.validationCaptcha(new YmCaptcha(email, captcha), true);
-            YmUser user = this.userService.lambdaQuery().eq(YmUser::getEmail, email).one();
-            LoginUserVo loginUserVo = new LoginUserVo();
-            boolean userNotExist = Objects.isNull(user);
-            if (userNotExist) {
-                throw new YmException(ExecutionResult.USER_CODE_101);
-            } else if ("1".equals(user.getIsDisabled())) {
-                throw new YmException(ExecutionResult.USER_CODE_102);
-            } else if (!Objects.isNull(user.getPassword()) && user.getPassword().equals(EncryptUtil.MD5(params.getPassword()))) {
-                return this.setUserData(loginUserVo, user);
-            } else {
-                throw new YmException(ExecutionResult.USER_CODE_110);
-            }
         }
+
+        String captcha = params.getCaptcha();
+        this.validationCaptcha(new YmCaptcha(email, captcha), true);
+        YmUser user = this.userService.lambdaQuery().eq(YmUser::getEmail, email).one();
+        LoginUserVo loginUserVo = new LoginUserVo();
+        boolean userNotExist = Objects.isNull(user);
+        if (userNotExist) {
+            throw new YmException(ExecutionResult.USER_CODE_101);
+        }
+
+        if ("1".equals(user.getIsDisabled())) {
+            throw new YmException(ExecutionResult.USER_CODE_102);
+        }
+
+        if (!Objects.isNull(user.getPassword()) && user.getPassword().equals(EncryptUtil.MD5(params.getPassword()))) {
+            return this.setUserData(loginUserVo, user);
+        } else {
+            throw new YmException(ExecutionResult.USER_CODE_110);
+        }
+
     }
 
     private LoginUserVo setUserData(LoginUserVo loginUserVo, final YmUser dataUser) {
+
         final String userId = dataUser.getUserId();
         YmQueryUser queryUser = new YmQueryUser(userId);
         QueryWrapper<YmQueryUser> queryUserWrapper = new QueryWrapper();
         queryUserWrapper.eq("user_id", queryUser.getUserId());
-        YmQueryUser queryUserTarget = (YmQueryUser)this.queryUserService.getOne(queryUserWrapper);
+        YmQueryUser queryUserTarget = this.queryUserService.getOne(queryUserWrapper);
         boolean UserIsNullFlag = Objects.isNull(queryUserTarget);
         if (UserIsNullFlag) {
             boolean saveQueryFlag = this.queryUserService.save(queryUser);
@@ -192,12 +214,15 @@ public class AccountServiceImpl implements AccountService {
             }
         };
         String token = JwtUtil.createToken(tokenMessage);
-        dataUser.setAvatar(avatar).setUserName(userName);
+        dataUser.setAvatar(avatar);
+        dataUser.setUserName(userName);
         boolean isUpdate = this.userService.lambdaUpdate().eq(YmUser::getUserId, userId).update(dataUser);
         if (!isUpdate) {
             throw new YmException(ExecutionResult.DATA_CODE_301);
         } else {
-            return loginUserVo.setUserId(userId).setToken(token);
+            loginUserVo.setUserId(userId);
+            loginUserVo.setToken(token);
+            return loginUserVo;
         }
     }
 
@@ -206,47 +231,54 @@ public class AccountServiceImpl implements AccountService {
         String email = captcha.getEmail();
         if (!this.mailUtils.checkEmail(email)) {
             throw new YmException(ExecutionResult.REQUEST_CODE_401);
-        } else {
-            YmCaptcha captchaData = this.captchaService.lambdaQuery().eq(YmCaptcha::getCode, code).eq(YmCaptcha::getEmail, email).one();
-            if (Objects.isNull(captchaData)) {
-                throw new YmException(ExecutionResult.CAPTCHA_CODE_402);
-            } else {
-                long now = System.currentTimeMillis();
-                long time = now - Long.parseLong(captchaData.getCreateTime());
-                boolean isValidation = captchaData.getIsValidation().equals(AppIsDel.NOT_DELETE.getCode());
-                if (isValidation && time > 180000L) {
-                    throw new YmException(ExecutionResult.CAPTCHA_CODE_403);
-                } else {
-                    return !isRemove ? this.captchaService.lambdaUpdate().eq(YmCaptcha::getCode, code).eq(YmCaptcha::getEmail, email).update(captchaData.setIsValidation(AppIsDel.DELETED.getCode())) : this.captchaService.lambdaUpdate().eq(YmCaptcha::getCode, code).eq(YmCaptcha::getEmail, email).remove();
-                }
-            }
         }
+
+        YmCaptcha captchaData = this.captchaService.lambdaQuery().eq(YmCaptcha::getCode, code).eq(YmCaptcha::getEmail, email).one();
+
+        if (Objects.isNull(captchaData)) {
+            throw new YmException(ExecutionResult.CAPTCHA_CODE_402);
+        }
+
+        long now = System.currentTimeMillis();
+        long time = now - Long.parseLong(captchaData.getCreateTime());
+        boolean isValidation = captchaData.getIsValidation().equals(AppIsDel.NOT_DELETE.getCode());
+
+        if (isValidation && time > 180000L) {
+            throw new YmException(ExecutionResult.CAPTCHA_CODE_403);
+        }
+
+        return !isRemove ? this.captchaService.lambdaUpdate().eq(YmCaptcha::getCode, code).eq(YmCaptcha::getEmail, email).update(captchaData.setIsValidation(AppIsDel.DELETED.getCode())) : this.captchaService.lambdaUpdate().eq(YmCaptcha::getCode, code).eq(YmCaptcha::getEmail, email).remove();
     }
 
     public boolean resetPassword(LoginParams loginParams) {
+
         String email = loginParams.getEmail();
         String code = loginParams.getCaptcha();
+
         boolean isValidation = this.validationCaptcha(new YmCaptcha(email, code), true);
         if (!isValidation) {
             return false;
-        } else {
-            String password = loginParams.getPassword();
-            if (password.length() < 6) {
-                throw new YmException(ExecutionResult.USER_CODE_111);
-            } else {
-                String confirmPwd = loginParams.getConfirmPwd();
-                if (!password.equals(confirmPwd)) {
-                    throw new YmException(ExecutionResult.USER_CODE_108);
-                } else {
-                    YmUser user = this.userService.lambdaQuery().eq(YmUser::getEmail, email).one();
-                    user.setPassword(EncryptUtil.MD5(password));
-                    return this.userService.lambdaUpdate().eq(YmUser::getUserId, user.getUserId()).update(user);
-                }
-            }
         }
+
+        String password = loginParams.getPassword();
+        if (password.length() < 6) {
+            throw new YmException(ExecutionResult.USER_CODE_111);
+        }
+
+        String confirmPwd = loginParams.getConfirmPwd();
+        if (!password.equals(confirmPwd)) {
+            throw new YmException(ExecutionResult.USER_CODE_108);
+        }
+
+        YmUser user = this.userService.lambdaQuery().eq(YmUser::getEmail, email).one();
+        user.setPassword(EncryptUtil.MD5(password));
+        return this.userService.lambdaUpdate().eq(YmUser::getUserId, user.getUserId()).update(user);
+
     }
 
     public boolean deleteCaptchaByEmail(String email) {
+
         return this.captchaService.lambdaUpdate().eq(YmCaptcha::getEmail, email).remove();
+
     }
 }

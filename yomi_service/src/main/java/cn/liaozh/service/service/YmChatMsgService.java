@@ -8,6 +8,7 @@ import com.github.yulichang.base.MPJBaseService;
 import java.util.List;
 
 public interface YmChatMsgService extends MPJBaseService<YmChatMsg> {
+
     List<YmChatMsg> notSignedMsg(String userId);
 
     List<MsgChatVo> getMsg(String userId);

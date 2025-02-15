@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmArticleImageServiceImpl extends MPJBaseServiceImpl<YmArticleImageMapper, YmArticleImage> implements YmArticleImageService {
-    public YmArticleImageServiceImpl() {
-    }
 
     public void update(YmArticleImage image) {
-        ((YmArticleImageMapper)this.baseMapper).insert(image);
+        this.baseMapper.insert(image);
     }
 }

@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.github.yulichang.base.MPJBaseServiceImpl;
 
 import javax.annotation.Resource;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +22,21 @@ public class YmQueryUserServiceImpl extends MPJBaseServiceImpl<YmQueryUserMapper
     @Resource
     private YmUserService userService;
 
-    public YmQueryUserServiceImpl() {
-    }
-
     public UserInfoVo selectOne(String queryId) {
-        YmQueryUser queryUser = (YmQueryUser)((YmQueryUserMapper)this.baseMapper).selectById(queryId);
+        YmQueryUser queryUser = this.baseMapper.selectById(queryId);
         if (queryUser == null) {
             throw new YmException(ExecutionResult.USER_CODE_101);
-        } else {
-            YmUser user = CommonUserUtil.verificationUser(this.userService.selectUserById(queryUser.getUserId()));
-            UserInfoVo userVo = new UserInfoVo();
-            BeanUtils.copyProperties(user, userVo);
-            userVo.setId(Integer.parseInt(queryId));
-            return userVo;
         }
+        YmUser user = CommonUserUtil.verificationUser(this.userService.selectUserById(queryUser.getUserId()));
+        UserInfoVo userVo = new UserInfoVo();
+        BeanUtils.copyProperties(user, userVo);
+        userVo.setId(Integer.parseInt(queryId));
+        return userVo;
+
     }
 
     public Integer selectIdByUserId(String userId) {
-        return ((YmQueryUser)((LambdaQueryChainWrapper)this.lambdaQuery().eq(YmQueryUser::getUserId, userId)).one()).getQueryId();
+        return this.lambdaQuery().eq(YmQueryUser::getUserId, userId).one().getQueryId();
     }
 }
 

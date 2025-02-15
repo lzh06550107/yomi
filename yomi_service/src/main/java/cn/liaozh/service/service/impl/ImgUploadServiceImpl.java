@@ -10,8 +10,6 @@ import java.util.List;
 
 @Service
 public class ImgUploadServiceImpl implements ImgUploadService {
-    public ImgUploadServiceImpl() {
-    }
 
     public String commonUpload(MultipartFile file, int imgSize) {
         return UploadUtils.uploadLocalFileAvatar(file);

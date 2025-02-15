@@ -809,17 +809,17 @@ CREATE TABLE  ym_carousel_figure   (
 -- ----------------------------
 DROP TABLE IF EXISTS  ym_chat_msg ;
 CREATE TABLE  ym_chat_msg   (
-   id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '消息id',
-   send_user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '发送者id',
-   accept_user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '接收者id',
-   msg  varchar(555) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '聊天内容',
-   image  varchar(355) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '图片链接',
-   sign_flag  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '消息是否签收状态\r\n1：签收\r\n0：未签收\r\n',
-   create_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '发送请求的事件',
-   update_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '修改时间',
-   type  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '判断什么类型的消息 0系统通知，1点赞通知，2评论通知，3关注通知，4.聊天通知',
+   id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '消息id',
+   send_user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '发送者id',
+   accept_user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '接收者id',
+   msg  varchar(555) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '聊天内容',
+   image  varchar(355) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片链接',
+   sign_flag  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '消息是否签收状态\r\n1：签收\r\n0：未签收\r\n',
+   create_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '发送请求的事件',
+   update_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '修改时间',
+   type  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '判断什么类型的消息 0系统通知，1点赞通知，2评论通知，3关注通知，4.聊天通知',
   PRIMARY KEY ( id ) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ym_chat_msg
@@ -861,17 +861,17 @@ INSERT INTO  ym_class  VALUES ('5', '4', '其它', NULL, '0', NULL, NULL, NULL);
 DROP TABLE IF EXISTS  ym_comment ;
 CREATE TABLE  ym_comment   (
    comment_id  char(19) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '评论主键id',
-   article_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文章id',
-   user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '评论人id',
-   content  varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '评论内容',
-   parent_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '0' COMMENT '用于回复',
+   article_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文章id',
+   user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论人id',
+   content  varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '评论内容',
+   parent_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '用于回复',
    like_num  int(0) NULL DEFAULT 0 COMMENT '点赞数',
-   link  varchar(522) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '评论类型 0为文本评论  1为图片评论',
-   is_deleted  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '软删除 0可用 1删除',
-   create_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '创建时间',
-   update_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '修改时间',
+   link  varchar(522) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论类型 0为文本评论  1为图片评论',
+   is_deleted  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '软删除 0可用 1删除',
+   create_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '创建时间',
+   update_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '修改时间',
   PRIMARY KEY ( comment_id ) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评论主表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '评论主表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ym_comment
@@ -2121,17 +2121,17 @@ INSERT INTO  ym_comment_like  VALUES ('1557302633146945538', '152975400791916953
 DROP TABLE IF EXISTS  ym_comments ;
 CREATE TABLE  ym_comments   (
    comment_id  char(19) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '评论主键id',
-   target_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文章id',
-   user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '评论人id',
-   content  varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '评论内容',
-   parent_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用于回复',
+   target_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文章id',
+   user_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论人id',
+   content  varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '评论内容',
+   parent_id  char(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用于回复',
    like_num  int(0) NULL DEFAULT 0 COMMENT '点赞数',
-   link  varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '图片路径',
-   is_deleted  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0' COMMENT '软删除 0可用 1删除',
-   create_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '创建时间',
-   update_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '修改时间',
+   link  varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片路径',
+   is_deleted  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '软删除 0可用 1删除',
+   create_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建时间',
+   update_time  char(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '修改时间',
   PRIMARY KEY ( comment_id ) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评论主表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '评论主表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ym_comments
@@ -2808,9 +2808,9 @@ INSERT INTO  ym_str_attest  VALUES ('1557531432857915394', '董坤行', 20630737
 DROP TABLE IF EXISTS  ym_user ;
 CREATE TABLE  ym_user   (
    user_id  char(19) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '0' COMMENT '用户id',
-   open_id  char(28) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '微信openid',
+   open_id  char(28) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '微信openid',
    signature  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '这个用户摆烂，还没有个性签名' COMMENT '个性签名',
-   user_name  varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户昵称',
+   user_name  varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'user昵称' COMMENT '用户昵称',
    class_id  char(11) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '班级id',
    phone_number  char(11) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '电话号码',
    fans_num  int(0) NULL DEFAULT 0 COMMENT '粉丝数',
@@ -2824,28 +2824,43 @@ CREATE TABLE  ym_user   (
    notice  char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '消息推送 0开启 1关闭',
    create_time  char(13) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
    update_time  char(13) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-   delete_time  char(13) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL
+   delete_time  char(13) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+   email VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '邮箱',
+   password  VARCHAR(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '密码'
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ym_user
 -- ----------------------------
-INSERT INTO  ym_user  VALUES ('1527967566469914625', 'oDeIy5JEeo6fCF8rp32LmYZCqzuw', '这个用户摆烂，还没有个性签名', '派小星', '3', '18849021071', 8, '0', '0', '0', '0', '', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/0G2qxMf6YyWmZa91tMDVibVkU6QlKLH7CORl0tFDAlZJdicmvyDMUfZ6KicXj2Krg313pFgKibIficlibfKE8ZlVxNiag/132', '0', '1653130830769', '1653566547892', NULL);
-INSERT INTO  ym_user  VALUES ('1527967900697223169', 'oDeIy5OrzBDE5GjA0lBaZshXJ37s', '保持热爱  追逐山海', '海棠', '2', '18849021071', 13, '2', '0', '0', '0', 'SQ200203', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-06-17/e1ca10cc16774e6a90319119ff58ae72xx9Xk0n5iv5L4a93733686582dbe34f9f567943ba23a.jpg', '0', '1653130910455', '1655452767641', NULL);
-INSERT INTO  ym_user  VALUES ('1527968402898018305', 'oDeIy5Af-pZEDe7LEXu6fhV9Q4_8', '这个用户摆烂，还没有个性签名', 'Null', '2', '', 4, '0', '0', '0', '0', NULL, NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-05-21/d3bfb8d21e64458eadeb52fb3c900f67tmp_b7155b9bfe7e0158c552728af76cacbbfc1f85b1b993bf67.jpg', '0', '1653131030189', '1653292878652', NULL);
-INSERT INTO  ym_user  VALUES ('1528184056628502529', 'oDeIy5FAtu_JP2cZuc6SI9UIPvmM', '没有个性签名', '李亚辉', '3', '15511079949', 12, '2', '0', '0', '0', 'zh15511079949', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-05-27/f3667391ee93486fb7e205f534ab7d6d20200918160441_92330.jpg', '0', '1653182446045', '1653879852617', NULL);
-INSERT INTO  ym_user  VALUES ('1528215357112836098', 'oDeIy5M6wrX0v6M0xD2d6iZOOgMU', '这个用户摆烂', '看海蚂蚁', '2', '15373021767', 13, '2', '0', '0', '0', '', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/lZBS4gELmGKiaaQJk6luKtq1ROaIE50BYfCLSNBy6HEP7Hp0fDacvktkweMTSStia7ZDrI1vu06nP8G0e8QYeXww/132', '0', '1653189908662', '1660268087612', NULL);
-INSERT INTO  ym_user  VALUES ('1528248783333351426', 'oDeIy5NJgfCA18F1UxfqmE9H1aCo', '这个用户摆烂，还没有个性签名', '奥特蛋', '2', '', 13, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/KiczNE4fwe0N76IJe8dSUHCrxqZfSyDLyfyRy7Oxjc0ekPAqibqbgxt8chOWI6I6d5vqVq9t50wYTnZwsbQE7bfg/132', '0', '1653197878094', '1653876372597', NULL);
-INSERT INTO  ym_user  VALUES ('1529288402074144769', 'oDeIy5E3I0hOMGtU2Y5gCRYvneng', '我是阿博', 'Yolo', '5', '15631200265', 7, '1', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-05-25/32c6e3a7f06b4bba892199d1cee53466tmp_fc6351c01b8d98598f9c795b6c2c3402fb2b0d5f0028c463.jpg', '0', '1653445742517', '1655451032715', NULL);
-INSERT INTO  ym_user  VALUES ('1529290474769158146', 'oDeIy5M9-N2y4PCj8w53BITWjBi0', '这个用户摆烂，还没有个性签名', '啊辉', NULL, '', 5, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/XvlJudEx3kdQzkHrJtt6jASC7SD59b0NMsZqOrZakPhXQLrGpcQp0CUePx2hhClwLWqNzpykqickgE5GjiaAQibaQ/132', '0', '1653446236685', '1653453789647', NULL);
-INSERT INTO  ym_user  VALUES ('1529754007919169537', 'oDeIy5BeWPGt2KUS_H7LdRlDuA3s', '这个用户摆烂，还没有个性签名', 'chunshan', NULL, '', 1, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKbwbIoibOl9PS4M1UpKC4oicgKuyUbnGdEX6ibF4lVtAibSzwQefMeibSTQk5WhibHC6jk71KwldgxMIiaw/132', '0', '1653556751600', '1653556751600', NULL);
-INSERT INTO  ym_user  VALUES ('1535426082168111105', 'oDeIy5M-uKxluFhJdTXfbPeGWXgA', '这个用户摆烂，还没有个性签名', '君头', NULL, '', 1, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIq1BzHjIn04WMXN97dudoib4KOBYs4OybgCOlwFj2synI2icLGPrIlKBc8Jh93V38ic0ACXx44iaQWbg/132', '0', '1654909079483', '1654909079483', NULL);
-INSERT INTO  ym_user  VALUES ('1547419501513936897', 'oDeIy5KrsfRvKUG-meFCFnf-fG3A', '这个用户摆烂，还没有', '嘿嘿', '5', '13211118888', 1, '0', '0', '0', '0', '13211111111', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/V0G4bRKlVNQT8uNib2hF6IMozkSr9dorBrGn3ibV6aqlRY8ebia9anWOR6GIWxOklIDSN7ulYGLn0seBM2QJgabXw/132', '0', '1657768533483', '1660037260653', NULL);
-INSERT INTO  ym_user  VALUES ('1552920710219829249', 'oDeIy5MnNYG8naOI9jD_SmMaCQBg', '这个用', 'WuXth', '2', '18332568741', 1, '0', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-08-09/7a5e1ac07d974b61b68076236e4c5613tmp_85ecec3e8745b82aec153434c51a1f140014156e249b4e01.jpg', '0', '1659080123846', '1660268077333', NULL);
-INSERT INTO  ym_user  VALUES ('1556915671948865538', 'oDeIy5E8ep0HC1v1S-IZ11hJpYcM', '<h1>134</h1>', 'false', '2', '17659700883', 1, '2', '0', '0', '0', '455882376', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/6b4XOyIh0AkpBGJ4bEdPibS9vA2QGCj6DLDZH9gApLsWhYxC2unwMICHU8t4CAZJ3Lib7r3vgYhcld29L1dTBgQg/132', '0', '1660032596945', '1660270131007', NULL);
-INSERT INTO  ym_user  VALUES ('1556915747999985666', 'oDeIy5K2wKPnHVOGx3dv-J0VK92c', '靓仔靓女', '我好帅', '2', '15030096879', 3, '2', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-08-09/ba4ad56ec5274e4eb13d6ab49fb77ab2tmp_32ed460028ef338de0a9bc802d0b18d29f087e1f47bb9348.jpg', '0', '1660032615077', '1660037318601', NULL);
-INSERT INTO  ym_user  VALUES ('1556919581841305601', 'oDeIy5N1eekqJ2bZBpPKkNSYu1WM', '这个用户摆烂，还没有个性签名', 'Gx', '2', '13730227588', 0, '0', '0', '0', '0', '', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/BSSopQX9fbOhNeVJXnCGibCrddA1ttILbHYLYZiawGKIpn7yVPXiclibBlvzGnKE6Pwd9ib0atAg3MpnpoDW1BiaoWJQ/132', '0', '1660033529136', '1660033610377', NULL);
-INSERT INTO  ym_user  VALUES ('1556919695838294018', 'oDeIy5NzYggqOYXBdBCch942yjzY', '', '春⛰', '3', '18731260352', 1, '2', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-08-09/8c7517879da04e8aae26c1363d33f6b1tmp_d2434475e7abd8efd05611157a0b0307.jpg', '0', '1660033556315', '1660268137874', NULL);
-INSERT INTO  ym_user  VALUES ('1557271238525591554', 'oDeIy5BDXV2W5RunnVUxeUZhQvKw', '这个用户摆烂，还没有个性签名', '四季阳光', NULL, '', 0, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eq8qXZQGoTxticxd2F5DfgHibZJDxSv8ibKrARUTyHvphUEnwWoEUyWHAiclVWvuNF5kIPtFlNZKchs2g/132', '0', '1660117370622', '1660117370622', NULL);
+INSERT INTO  ym_user  VALUES ('1527967566469914625', 'oDeIy5JEeo6fCF8rp32LmYZCqzuw', '这个用户摆烂，还没有个性签名', '派小星', '3', '18849021071', 8, '0', '0', '0', '0', '', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/0G2qxMf6YyWmZa91tMDVibVkU6QlKLH7CORl0tFDAlZJdicmvyDMUfZ6KicXj2Krg313pFgKibIficlibfKE8ZlVxNiag/132', '0', '1653130830769', '1653566547892', NULL, '12345@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1527967900697223169', 'oDeIy5OrzBDE5GjA0lBaZshXJ37s', '保持热爱  追逐山海', '海棠', '2', '18849021071', 13, '2', '0', '0', '0', 'SQ200203', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-06-17/e1ca10cc16774e6a90319119ff58ae72xx9Xk0n5iv5L4a93733686582dbe34f9f567943ba23a.jpg', '0', '1653130910455', '1655452767641', NULL, '12346@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1527968402898018305', 'oDeIy5Af-pZEDe7LEXu6fhV9Q4_8', '这个用户摆烂，还没有个性签名', 'Null', '2', '', 4, '0', '0', '0', '0', NULL, NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-05-21/d3bfb8d21e64458eadeb52fb3c900f67tmp_b7155b9bfe7e0158c552728af76cacbbfc1f85b1b993bf67.jpg', '0', '1653131030189', '1653292878652', NULL, '12347@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1528184056628502529', 'oDeIy5FAtu_JP2cZuc6SI9UIPvmM', '没有个性签名', '李亚辉', '3', '15511079949', 12, '2', '0', '0', '0', 'zh15511079949', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-05-27/f3667391ee93486fb7e205f534ab7d6d20200918160441_92330.jpg', '0', '1653182446045', '1653879852617', NULL, '12348@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1528215357112836098', 'oDeIy5M6wrX0v6M0xD2d6iZOOgMU', '这个用户摆烂', '看海蚂蚁', '2', '15373021767', 13, '2', '0', '0', '0', '', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/lZBS4gELmGKiaaQJk6luKtq1ROaIE50BYfCLSNBy6HEP7Hp0fDacvktkweMTSStia7ZDrI1vu06nP8G0e8QYeXww/132', '0', '1653189908662', '1660268087612', NULL, '12349@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1528248783333351426', 'oDeIy5NJgfCA18F1UxfqmE9H1aCo', '这个用户摆烂，还没有个性签名', '奥特蛋', '2', '', 13, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/KiczNE4fwe0N76IJe8dSUHCrxqZfSyDLyfyRy7Oxjc0ekPAqibqbgxt8chOWI6I6d5vqVq9t50wYTnZwsbQE7bfg/132', '0', '1653197878094', '1653876372597', NULL, '123410@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1529288402074144769', 'oDeIy5E3I0hOMGtU2Y5gCRYvneng', '我是阿博', 'Yolo', '5', '15631200265', 7, '1', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-05-25/32c6e3a7f06b4bba892199d1cee53466tmp_fc6351c01b8d98598f9c795b6c2c3402fb2b0d5f0028c463.jpg', '0', '1653445742517', '1655451032715', NULL, '123411@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1529290474769158146', 'oDeIy5M9-N2y4PCj8w53BITWjBi0', '这个用户摆烂，还没有个性签名', '啊辉', NULL, '', 5, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/XvlJudEx3kdQzkHrJtt6jASC7SD59b0NMsZqOrZakPhXQLrGpcQp0CUePx2hhClwLWqNzpykqickgE5GjiaAQibaQ/132', '0', '1653446236685', '1653453789647', NULL, '123412@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1529754007919169537', 'oDeIy5BeWPGt2KUS_H7LdRlDuA3s', '这个用户摆烂，还没有个性签名', 'chunshan', NULL, '', 1, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKbwbIoibOl9PS4M1UpKC4oicgKuyUbnGdEX6ibF4lVtAibSzwQefMeibSTQk5WhibHC6jk71KwldgxMIiaw/132', '0', '1653556751600', '1653556751600', NULL, '123413@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1535426082168111105', 'oDeIy5M-uKxluFhJdTXfbPeGWXgA', '这个用户摆烂，还没有个性签名', '君头', NULL, '', 1, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIq1BzHjIn04WMXN97dudoib4KOBYs4OybgCOlwFj2synI2icLGPrIlKBc8Jh93V38ic0ACXx44iaQWbg/132', '0', '1654909079483', '1654909079483', NULL, '123414@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1547419501513936897', 'oDeIy5KrsfRvKUG-meFCFnf-fG3A', '这个用户摆烂，还没有', '嘿嘿', '5', '13211118888', 1, '0', '0', '0', '0', '13211111111', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/V0G4bRKlVNQT8uNib2hF6IMozkSr9dorBrGn3ibV6aqlRY8ebia9anWOR6GIWxOklIDSN7ulYGLn0seBM2QJgabXw/132', '0', '1657768533483', '1660037260653', NULL, '123415@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1552920710219829249', 'oDeIy5MnNYG8naOI9jD_SmMaCQBg', '这个用', 'WuXth', '2', '18332568741', 1, '0', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-08-09/7a5e1ac07d974b61b68076236e4c5613tmp_85ecec3e8745b82aec153434c51a1f140014156e249b4e01.jpg', '0', '1659080123846', '1660268077333', NULL, '123416@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1556915671948865538', 'oDeIy5E8ep0HC1v1S-IZ11hJpYcM', '<h1>134</h1>', 'false', '2', '17659700883', 1, '2', '0', '0', '0', '455882376', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/6b4XOyIh0AkpBGJ4bEdPibS9vA2QGCj6DLDZH9gApLsWhYxC2unwMICHU8t4CAZJ3Lib7r3vgYhcld29L1dTBgQg/132', '0', '1660032596945', '1660270131007', NULL, '123417@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1556915747999985666', 'oDeIy5K2wKPnHVOGx3dv-J0VK92c', '靓仔靓女', '我好帅', '2', '15030096879', 3, '2', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-08-09/ba4ad56ec5274e4eb13d6ab49fb77ab2tmp_32ed460028ef338de0a9bc802d0b18d29f087e1f47bb9348.jpg', '0', '1660032615077', '1660037318601', NULL, '123418@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1556919581841305601', 'oDeIy5N1eekqJ2bZBpPKkNSYu1WM', '这个用户摆烂，还没有个性签名', 'Gx', '2', '13730227588', 0, '0', '0', '0', '0', '', NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/BSSopQX9fbOhNeVJXnCGibCrddA1ttILbHYLYZiawGKIpn7yVPXiclibBlvzGnKE6Pwd9ib0atAg3MpnpoDW1BiaoWJQ/132', '0', '1660033529136', '1660033610377', NULL, '123419@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1556919695838294018', 'oDeIy5NzYggqOYXBdBCch942yjzY', '', '春⛰', '3', '18731260352', 1, '2', '0', '0', '0', '', NULL, 'https://ccl-1010.oss-cn-beijing.aliyuncs.com/2022-08-09/8c7517879da04e8aae26c1363d33f6b1tmp_d2434475e7abd8efd05611157a0b0307.jpg', '0', '1660033556315', '1660268137874', NULL, '123420@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO  ym_user  VALUES ('1557271238525591554', 'oDeIy5BDXV2W5RunnVUxeUZhQvKw', '这个用户摆烂，还没有个性签名', '四季阳光', NULL, '', 0, '0', '0', '0', '0', NULL, NULL, 'https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eq8qXZQGoTxticxd2F5DfgHibZJDxSv8ibKrARUTyHvphUEnwWoEUyWHAiclVWvuNF5kIPtFlNZKchs2g/132', '0', '1660117370622', '1660117370622', NULL, '123421@qq.com', '21232f297a57a5a743894a0e4a801fc3');
+
+DROP TABLE IF EXISTS  ym_captcha ;
+CREATE TABLE ym_captcha (
+    captcha_id CHAR(19) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'captcha id',
+    email VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '邮箱',
+    code VARCHAR(6) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '验证码',
+    is_validation CHAR(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '是否验证：0-未验证，1-已验证',
+    is_deleted CHAR(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '是否删除：0-未删除，1-已删除',
+    create_time  char(13) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    update_time  char(13) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    PRIMARY KEY (captcha_id),
+    UNIQUE KEY idx_email (email) -- 邮箱唯一索引 (可选，根据业务需求)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=Dynamic COMMENT='验证码表';
 
 SET FOREIGN_KEY_CHECKS = 1;

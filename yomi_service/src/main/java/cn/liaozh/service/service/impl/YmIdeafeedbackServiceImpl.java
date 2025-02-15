@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmIdeafeedbackServiceImpl extends ServiceImpl<YmIdeafeedbackMapper, YmIdeafeedback> implements YmIdeafeedbackService {
-    public YmIdeafeedbackServiceImpl() {
-    }
+
 }

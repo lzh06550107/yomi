@@ -21,9 +21,6 @@ public class YmFansController {
     @Resource
     private YmFansService fansService;
 
-    public YmFansController() {
-    }
-
     @GetMapping({"query"})
     public R fuzzyQueryFans(String userId, @RequestParam("judge") String judge, @RequestParam("content") String content, @RequestParam("page") Integer page) {
         Page<UserInfoVo> list;

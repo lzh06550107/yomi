@@ -23,21 +23,19 @@ public class UserTagUtils {
     @Autowired
     private YmArticleService articleService;
 
-    public UserTagUtils() {
-    }
-
     public boolean isGoodUser(String userId) {
         List<YmIntactArticle> intactArticles = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIsDeleted, "0").eq(YmIntactArticle::getUserId, userId).list();
         if (intactArticles.isEmpty()) {
             return false;
-        } else {
-            List<String> articleIds = (List)intactArticles.stream().map(YmIntactArticle::getArticleId).collect(Collectors.toList());
-            List<YmArticle> articleList = ((LambdaQueryChainWrapper)this.articleService.lambdaQuery().in(YmArticle::getArticleId, articleIds)).list();
-            long likeNum = articleList.stream().mapToLong(YmArticle::getLikeNum).sum();
-            long views = articleList.stream().mapToLong(YmArticle::getViewsNum).sum();
-            long commentNum = articleList.stream().mapToLong(YmArticle::getCommentNum).sum();
-            return likeNum > 15L && views > 100L && commentNum > 8L;
         }
+
+        List<String> articleIds = (List) intactArticles.stream().map(YmIntactArticle::getArticleId).collect(Collectors.toList());
+        List<YmArticle> articleList = ((LambdaQueryChainWrapper) this.articleService.lambdaQuery().in(YmArticle::getArticleId, articleIds)).list();
+        long likeNum = articleList.stream().mapToLong(YmArticle::getLikeNum).sum();
+        long views = articleList.stream().mapToLong(YmArticle::getViewsNum).sum();
+        long commentNum = articleList.stream().mapToLong(YmArticle::getCommentNum).sum();
+        return likeNum > 15L && views > 100L && commentNum > 8L;
+
     }
 
     public boolean isComplaintsUser(String userId) {
@@ -46,11 +44,11 @@ public class UserTagUtils {
     }
 
     public List<String> getSchoolTag(String userId) {
-        List<String> list = new ArrayList();
-        YmUser one = (YmUser)((LambdaQueryChainWrapper)this.ymUserService.lambdaQuery().eq(YmUser::getUserId, userId)).one();
+        List<String> list = new ArrayList<>();
+        YmUser one = this.ymUserService.lambdaQuery().eq(YmUser::getUserId, userId).one();
         if (one.getClassId() != null && !one.getClassId().equals("")) {
-            YmClass ymClass = (YmClass)((LambdaQueryChainWrapper)this.ymClassService.lambdaQuery().eq(YmClass::getClassId, one.getClassId())).one();
-            YmClass schoolName = (YmClass)((LambdaQueryChainWrapper)this.ymClassService.lambdaQuery().eq(YmClass::getClassId, ymClass.getParentId())).one();
+            YmClass ymClass = this.ymClassService.lambdaQuery().eq(YmClass::getClassId, one.getClassId()).one();
+            YmClass schoolName = this.ymClassService.lambdaQuery().eq(YmClass::getClassId, ymClass.getParentId()).one();
             list.add(ymClass.getTitle());
             list.add(schoolName.getTitle());
             return list;

@@ -1,30 +1,16 @@
 package cn.liaozh.pojo.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class BusinessCardVo {
-    public BusinessCardVo() {
-    }
 
-    public boolean equals(final Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof BusinessCardVo)) {
-            return false;
-        } else {
-            BusinessCardVo other = (BusinessCardVo)o;
-            return other.canEqual(this);
-        }
-    }
-
-    protected boolean canEqual(final Object other) {
-        return other instanceof BusinessCardVo;
-    }
-
-    public int hashCode() {
-        int result = 1;
-        return 1;
-    }
-
-    public String toString() {
-        return "BusinessCardVo()";
-    }
+    private int id;
 }

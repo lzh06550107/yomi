@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping({"/ym_server/article-classify"})
 public class YmArticleFamilyController {
+
     @Autowired
     YmArticleFamilyService familyService;
 

@@ -28,6 +28,7 @@ import java.util.List;
 
 @Service
 public class YmArticleLikeServiceImpl extends MPJBaseServiceImpl<YmArticleLikeMapper, YmArticleLike> implements YmArticleLikeService {
+
     @Autowired
     StringRedisTemplate redisTemplate;
     @Autowired
@@ -38,9 +39,6 @@ public class YmArticleLikeServiceImpl extends MPJBaseServiceImpl<YmArticleLikeMa
     YmArticleLikeService likeService;
     @Autowired
     private WebSocketUtils webSocketUtils;
-
-    public YmArticleLikeServiceImpl() {
-    }
 
     public List<ArticleLikeStatus> likeStatus(String userid, ArticleIdVo vo) {
         String s = vo.getId();

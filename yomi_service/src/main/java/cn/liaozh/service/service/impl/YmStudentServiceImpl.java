@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmStudentServiceImpl extends ServiceImpl<YmStudentMapper, YmStudent> implements YmStudentService {
-    public YmStudentServiceImpl() {
-    }
+
 }

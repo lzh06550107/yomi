@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.websocket.Session;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,21 +47,18 @@ public class YmChatMsgServiceImpl extends MPJBaseServiceImpl<YmChatMsgMapper, Ym
     @Autowired
     private YmCommentsService commentsService;
 
-    public YmChatMsgServiceImpl() {
-    }
-
     public List<YmChatMsg> notSignedMsg(String userId) {
         return this.lambdaQuery().eq(YmChatMsg::getType, "0").eq(YmChatMsg::getAcceptUserId, userId).list();
     }
 
     public List<MsgChatVo> getMsg(String userId) {
-        List<MsgChatVo> msgList = new ArrayList();
+        List<MsgChatVo> msgList = new ArrayList<>();
         LambdaQueryChainWrapper<YmUser> userQr = this.ymUserService.lambdaQuery();
         LambdaQueryChainWrapper<YmChatMsg> eq = this.lambdaQuery().eq(YmChatMsg::getAcceptUserId, userId).eq(YmChatMsg::getSignFlag, "0");
         List<YmChatMsg> likeList = eq.in(YmChatMsg::getType, "1", "3", "4", "6").orderByDesc(YmChatMsg::getCreateTime).list();
         List<String> unlikeUserIds = likeList.stream().map(YmChatMsg::getSendUserId).collect(Collectors.toList());
         StringBuffer unlikeStr = new StringBuffer("暂无新消息");
-        if (unlikeUserIds.size() != 0) {
+        if (!unlikeUserIds.isEmpty()) {
             unlikeStr = new StringBuffer();
             List<String> unlikeUsers = userQr.in(YmUser::getUserId, unlikeUserIds).list().stream().map(YmUser::getUserName).collect(Collectors.toList());
             int unLikeSize = unlikeUsers.size();
@@ -145,7 +139,7 @@ public class YmChatMsgServiceImpl extends MPJBaseServiceImpl<YmChatMsgMapper, Ym
         } else {
             Page<YmChatMsg> chatMsgPage = new Page();
             if (isMsgType) {
-                List<YmChatMsg> msgList = ((YmChatMsgMapper)this.baseMapper).selectMsgList(userId, PaginationVO.pageBuild(page, size));
+                List<YmChatMsg> msgList = this.baseMapper.selectMsgList(userId, PaginationVO.pageBuild(page, size));
                 long total = this.lambdaQuery().select(YmChatMsg::getId).eq(YmChatMsg::getType, MsgEnumType.USER_SEND_MSG.getType()).eq(YmChatMsg::getAcceptUserId, userId).groupBy(YmChatMsg::getSendUserId).list().size();
                 chatMsgPage.setRecords(msgList).setSize((long)size).setCurrent((long)page).setTotal(total).setPages((total - 1L) / (long)size + 1L);
             } else {
@@ -265,7 +259,7 @@ public class YmChatMsgServiceImpl extends MPJBaseServiceImpl<YmChatMsgMapper, Ym
                 resultList.add(item);
             }
 
-            chatMsgPage.setRecords((resultList == null ? new ArrayList() : resultList));
+            chatMsgPage.setRecords(Optional.ofNullable(resultList).orElse(Collections.emptyList()));
             return chatMsgPage;
         }
     }
@@ -307,13 +301,13 @@ public class YmChatMsgServiceImpl extends MPJBaseServiceImpl<YmChatMsgMapper, Ym
                 )
                 .page(new Page<>(page, size));
         List<YmChatMsg> resultList = resultPage.getRecords();
-        resultList = (List)resultList.stream().sorted(Comparator.comparing(YmChatMsg::getCreateTime).reversed()).collect(Collectors.toList());
+        resultList = resultList.stream().sorted(Comparator.comparing(YmChatMsg::getCreateTime).reversed()).collect(Collectors.toList());
 
         for(YmChatMsg chatMsg : resultList) {
             chatMsg.setSendUser(this.getSendUser(chatMsg.getSendUserId()));
         }
 
-        List<String> idList = (List)resultList.stream().filter((p) -> p.getSignFlag().equals("0")).map(YmChatMsg::getId).collect(Collectors.toList());
+        List<String> idList = resultList.stream().filter((p) -> p.getSignFlag().equals("0")).map(YmChatMsg::getId).collect(Collectors.toList());
         this.updateUnReadNum(idList, userId);
 
         for(YmChatMsg chatMsg : resultList) {

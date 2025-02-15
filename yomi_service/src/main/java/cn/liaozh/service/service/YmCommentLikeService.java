@@ -4,6 +4,7 @@ import cn.liaozh.pojo.YmCommentLike;
 import com.github.yulichang.base.MPJBaseService;
 
 public interface YmCommentLikeService extends MPJBaseService<YmCommentLike> {
+
     YmCommentLike queryUserLike(String userId, String commentId);
 
     Integer insertLike(YmCommentLike ymCommentLike);

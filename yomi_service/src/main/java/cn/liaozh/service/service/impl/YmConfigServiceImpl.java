@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmConfigServiceImpl extends ServiceImpl<YmConfigMapper, YmConfig> implements YmConfigService {
-    public YmConfigServiceImpl() {
-    }
+
 }

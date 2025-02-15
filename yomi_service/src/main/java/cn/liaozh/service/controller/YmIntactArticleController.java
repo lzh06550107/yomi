@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping({"/ym_server/IntactArticle"})
 public class YmIntactArticleController {
+
     @Autowired
     private YmIntactArticleService intactArticleService;
     @Autowired
@@ -38,9 +39,6 @@ public class YmIntactArticleController {
     private AuthUserUtils authUserUtils;
     @Autowired
     private YmArticleService articleService;
-
-    public YmIntactArticleController() {
-    }
 
     @GetMapping({"allSearch"})
     public R allSearch(String userId, @RequestParam String content, @RequestParam Integer page) {
@@ -61,9 +59,12 @@ public class YmIntactArticleController {
     @PostMapping
     public R addRedisArticle(String userId, @RequestBody @Validated SaveArticleVo vo) {
         List<YmArticle> list = this.articleService.lambdaQuery().eq(YmArticle::getTitle, vo.getTitle()).eq(YmArticle::getContent, vo.getContent()).list();
+
         if (!list.isEmpty()) {
             throw new YmException(ExecutionResult.COMMIT_CODE_701);
-        } else if (!this.authUserUtils.isAuthUser(userId)) {
+        }
+
+        if (!this.authUserUtils.isAuthUser(userId)) {
             return R.error().message("未认证，请先认证再发布文章");
         } else if (!this.stringUtils.strFilter(vo.getContent()) && !this.stringUtils.strFilter(vo.getTitle())) {
             String intactArticleId = this.intactArticleService.saveRedisArticle(userId, vo);

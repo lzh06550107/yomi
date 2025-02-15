@@ -24,6 +24,7 @@ import java.util.Objects;
 @RequestMapping({"/ym_server/comment"})
 @Validated
 public class YmCommentController {
+
     @Resource
     private YmCommentService ymCommentService;
     @Autowired
@@ -36,7 +37,9 @@ public class YmCommentController {
     public R addCommentParent(String userId, @RequestBody CommentVo commentVo) {
         if (userId.equals(commentVo.getUserId())) {
             throw new YmException(ExecutionResult.REQUEST_CODE_401);
-        } else if (!this.authUserUtils.isAuthUser(userId)) {
+        }
+
+        if (!this.authUserUtils.isAuthUser(userId)) {
             return R.error().message("未认证，请先认证再发布商品");
         } else {
             this.ymCommentService.saveCommentParent(commentVo);

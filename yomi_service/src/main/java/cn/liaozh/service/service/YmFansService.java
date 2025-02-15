@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.base.MPJBaseService;
 
 public interface YmFansService extends MPJBaseService<YmFans> {
+
     boolean insertFans(YmFans fans);
 
     PageVo selectFansList(String userId, int pageNum, String column);

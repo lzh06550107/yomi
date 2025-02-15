@@ -21,12 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestController
 @RequestMapping({"/ym_server/chatMsg"})
 public class YmChatMsgController {
+
     @Autowired
     private YmChatMsgService chatMsgService;
-    public static final Map<String, Session> ONLINE_USER_SESSIONS = new ConcurrentHashMap();
 
-    public YmChatMsgController() {
-    }
+    public static final Map<String, Session> ONLINE_USER_SESSIONS = new ConcurrentHashMap();
 
     @GetMapping
     public R notSignedMsg(String userId) {
@@ -38,6 +37,7 @@ public class YmChatMsgController {
     public R getMsgDetail(String userId, @PathVariable String sendUserId, @PathVariable Integer page, @PathVariable Integer size) {
         Map<String, Object> map = new HashMap();
         Page<YmChatMsg> msgPage = this.chatMsgService.getMsgDetail(userId, sendUserId, page, size);
+
         if (msgPage.getTotal() > 0L) {
             map.put("records", this.cleanData(msgPage));
             map.put("total", msgPage.getTotal());
@@ -77,7 +77,7 @@ public class YmChatMsgController {
     private List<Map<String, Object>> cleanData(Page<YmChatMsg> pageData) {
         List<Map<String, Object>> resultList = new ArrayList();
 
-        for(YmChatMsg chatMsg : pageData.getRecords()) {
+        for (YmChatMsg chatMsg : pageData.getRecords()) {
             Map<String, Object> resultMap = (Map) JSON.parseObject(JSON.toJSONString(chatMsg), HashMap.class);
             final UserInfoVo sendUser = chatMsg.getSendUser();
             final String sendUserName = sendUser.getUserName();
@@ -96,7 +96,8 @@ public class YmChatMsgController {
 
     @PostMapping({"send"})
     public R sendMsg(String userId, @RequestBody YmChatMsg chatMsg) {
-        chatMsg.setSendUserId(userId).setType(MsgEnumType.USER_SEND_MSG.getType());
+        chatMsg.setSendUserId(userId);
+        chatMsg.setType(MsgEnumType.USER_SEND_MSG.getType());
         boolean isSend = this.chatMsgService.sendMsg(chatMsg);
         return isSend ? R.ok() : R.error();
     }

@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmCommodityFamilyServiceImpl extends MPJBaseServiceImpl<YmCommodityFamilyMapper, YmCommodityFamily> implements YmCommodityFamilyService {
-    public YmCommodityFamilyServiceImpl() {
-    }
+
 }

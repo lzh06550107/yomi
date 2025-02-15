@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface YmCommentService extends MPJBaseService<YmComment> {
+
     Page<CommentsVo> queryTwoComment(String userId, String articleId, String commentId, Integer page);
 
     Page<CommentsVo> queryOneComment(String userId, String articleId, Integer page);

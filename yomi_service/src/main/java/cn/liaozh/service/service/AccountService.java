@@ -8,6 +8,7 @@ import cn.liaozh.pojo.vo.WxLoginVo;
 import java.io.IOException;
 
 public interface AccountService {
+
     LoginUserVo loginUser(WxLoginVo loginVo) throws IOException;
 
     boolean register(LoginParams params);

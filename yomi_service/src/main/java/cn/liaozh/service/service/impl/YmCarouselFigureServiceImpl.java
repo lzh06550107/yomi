@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmCarouselFigureServiceImpl extends ServiceImpl<YmCarouselFigureMapper, YmCarouselFigure> implements YmCarouselFigureService {
-    public YmCarouselFigureServiceImpl() {
-    }
+
 }

@@ -14,13 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping({"/ym_server/ideafeedback"})
 public class YmIdeafeedbackController {
+
     @Autowired
     private YmIdeafeedbackService ideafeedbackService;
     @Autowired
     private WebSocketUtils webSocketUtils;
-
-    public YmIdeafeedbackController() {
-    }
 
     @PostMapping({"feedback"})
     public R feedback(String userId, @RequestBody YmIdeafeedback ymIdeafeedback) {

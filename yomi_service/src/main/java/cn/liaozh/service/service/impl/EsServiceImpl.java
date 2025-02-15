@@ -47,7 +47,7 @@ public class EsServiceImpl {
     }
 
     public List<Object> inquiry(String index, String str) {
-        SearchRequest searchRequest = new SearchRequest(new String[]{index});
+        SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder.requireFieldMatch(false).field("content").field("title").preTags(new String[]{"<span style='color:red;'>"}).postTags(new String[]{"</span>"});

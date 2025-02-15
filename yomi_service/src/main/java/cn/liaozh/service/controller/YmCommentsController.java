@@ -16,13 +16,11 @@ import java.util.Objects;
 @RestController
 @RequestMapping({"/ym_server/comments"})
 public class YmCommentsController {
+
     @Autowired
     YmCommentsService commentsService;
     @Autowired
     private AuthUserUtils authUserUtils;
-
-    public YmCommentsController() {
-    }
 
     @GetMapping
     public R getLevelOneComments(String userId, @PathParam("goodsId") String goodsId, @PathParam("page") Integer page, @PathParam("parentId") String parentId) {

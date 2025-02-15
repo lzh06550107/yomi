@@ -77,11 +77,11 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
     }
 
     private List<IntactArticleVo> getIntactArticleVos(List<YmIntactArticle> list) {
-        List<YmUser> userList = this.userService.list((Wrapper) null);
-        List<YmArticle> articleList = this.articleService.list((Wrapper) null);
-        List<YmArticleFamily> familyList = this.articleFamilyService.list((Wrapper) null);
-        List<YmArticleImage> imageList = this.articleImageService.list((Wrapper) null);
-        List<IntactArticleVo> articleVos = new ArrayList();
+        List<YmUser> userList = this.userService.list(null);
+        List<YmArticle> articleList = this.articleService.list(null);
+        List<YmArticleFamily> familyList = this.articleFamilyService.list(null);
+        List<YmArticleImage> imageList = this.articleImageService.list(null);
+        List<IntactArticleVo> articleVos = new ArrayList<>();
         list.forEach((temp) -> {
             EsArticlePo esArticlePo = new EsArticlePo();
             IntactArticleVo intactArticleVo = new IntactArticleVo();
@@ -126,9 +126,9 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
     }
 
     public void addRedisArticle(String intactArticleId) {
-        String allArticlesJSON = (String) this.redisTemplate.opsForValue().get("allArticlesJSON");
+        String allArticlesJSON = this.redisTemplate.opsForValue().get("allArticlesJSON");
         List<IntactArticleVo> articleVos = JSON.parseArray(allArticlesJSON, IntactArticleVo.class);
-        YmIntactArticle byId = (YmIntactArticle) this.getById(intactArticleId);
+        YmIntactArticle byId = this.getById(intactArticleId);
         IntactArticleVo oneData = this.mysqlSelectOneArticle(byId);
         articleVos.add(oneData);
         String s = JSON.toJSONString(articleVos);
@@ -167,8 +167,8 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
         Page<IntactArticleDTO> entities = (Page) this.intactArticleMapper.selectJoinPage(new Page<>((long) page, 10L), IntactArticleDTO.class, wrapper);
         List<String> intactArticleIdList = entities.getRecords().stream().map(IntactArticleDTO::getIntactArticleId).collect(Collectors.toList());
         List<YmArticleLike> list = this.articleLikeService.lambdaQuery().in(intactArticleIdList.size() > 0, YmArticleLike::getArticleId, intactArticleIdList).eq(YmArticleLike::getUserId, userId).list();
-        Page<IntactArticleVos> intactArticleVosPage = new Page();
-        HashMap<String, Object> ifLike = new HashMap();
+        Page<IntactArticleVos> intactArticleVosPage = new Page<>();
+        HashMap<String, Object> ifLike = new HashMap<>();
         list.forEach((temp) -> ifLike.put(temp.getArticleId(), "0"));
         List<IntactArticleVos> collect = entities.getRecords().stream().map((temp) -> {
             IntactArticleVos articleVos = new IntactArticleVos("", new ArticleVo(), new UserVo(), new ImageVo(), new FamilyVo(), false, false, "0", false);
@@ -419,31 +419,32 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
         Page<IntactArticleDTO> entities = (Page) this.intactArticleMapper.selectJoinPage(objectPage, IntactArticleDTO.class, wrapper);
         Page<IntactArticleVos> intactArticleVosPage = new Page();
         List<String> intactArticleIdList = entities.getRecords().stream().map(IntactArticleDTO::getIntactArticleId).collect(Collectors.toList());
-        if (intactArticleIdList.size() == 0) {
+        if (intactArticleIdList.isEmpty()) {
             return new Page();
-        } else {
-            List<IntactArticleVos> collect = entities.getRecords().stream().map((temp) -> {
-                IntactArticleVos articleVos = new IntactArticleVos("", new ArticleVo(), new UserVo(), new ImageVo(), new FamilyVo(), false, false, "0", false);
-                BeanUtils.copyProperties(temp, articleVos.getArticle());
-                BeanUtils.copyProperties(temp, articleVos.getFamily());
-                BeanUtils.copyProperties(temp, articleVos.getUser());
-                BeanUtils.copyProperties(temp, articleVos.getImage());
-                BeanUtils.copyProperties(temp, articleVos);
-                YmIntactArticle ymIntactArticle = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIntactArticleId, temp.getIntactArticleId()).eq(YmIntactArticle::getIsDeleted, "0").one();
-                String articleId = ymIntactArticle.getArticleId();
-                YmArticleLike one = this.articleLikeService.lambdaQuery().eq(YmArticleLike::getArticleId, articleId).eq(YmArticleLike::getUserId, userId).one();
-                if (one == null) {
-                    articleVos.setLikeStatus(false);
-                } else {
-                    articleVos.setLikeStatus(one.getLikeState().equals("0"));
-                }
-
-                return articleVos;
-            }).collect(Collectors.toList());
-            BeanUtils.copyProperties(entities, intactArticleVosPage);
-            intactArticleVosPage.setRecords(collect);
-            return intactArticleVosPage;
         }
+
+        List<IntactArticleVos> collect = entities.getRecords().stream().map((temp) -> {
+            IntactArticleVos articleVos = new IntactArticleVos("", new ArticleVo(), new UserVo(), new ImageVo(), new FamilyVo(), false, false, "0", false);
+            BeanUtils.copyProperties(temp, articleVos.getArticle());
+            BeanUtils.copyProperties(temp, articleVos.getFamily());
+            BeanUtils.copyProperties(temp, articleVos.getUser());
+            BeanUtils.copyProperties(temp, articleVos.getImage());
+            BeanUtils.copyProperties(temp, articleVos);
+            YmIntactArticle ymIntactArticle = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIntactArticleId, temp.getIntactArticleId()).eq(YmIntactArticle::getIsDeleted, "0").one();
+            String articleId = ymIntactArticle.getArticleId();
+            YmArticleLike one = this.articleLikeService.lambdaQuery().eq(YmArticleLike::getArticleId, articleId).eq(YmArticleLike::getUserId, userId).one();
+            if (one == null) {
+                articleVos.setLikeStatus(false);
+            } else {
+                articleVos.setLikeStatus(one.getLikeState().equals("0"));
+            }
+
+            return articleVos;
+        }).collect(Collectors.toList());
+        BeanUtils.copyProperties(entities, intactArticleVosPage);
+        intactArticleVosPage.setRecords(collect);
+        return intactArticleVosPage;
+
     }
 
     public List<String> searchContentTips(String content) {
@@ -467,7 +468,7 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
             }
 
         });
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             List<YmIntactArticle> ymIntactArticles = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIsDeleted, "0").eq(YmIntactArticle::getPrivateState, "0").list();
             if (ymIntactArticles.size() == 0) {
                 return null;
@@ -556,15 +557,15 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
 
         for (int i = 0; i < dto.size() - 1; ++i) {
             for (int j = 0; j < dto.size() - 1 - i; ++j) {
-                double heatCommentNum = (double) ((IntactArticleDTO) dto.get(j)).getCommentNum() * (double) 0.5F;
-                double heatLikeNum = (double) ((IntactArticleDTO) dto.get(j)).getLikeNum() * 0.3;
-                double heatViewsNum = (double) ((IntactArticleDTO) dto.get(j)).getViewsNum() * 0.2;
-                double heatTime = Long.parseLong(((IntactArticleDTO) dto.get(j)).getCreateTime()) > System.currentTimeMillis() - 604800000L ? (double) 10000.0F : (double) 0.0F;
+                double heatCommentNum = (double) (dto.get(j)).getCommentNum() * (double) 0.5F;
+                double heatLikeNum = (double) (dto.get(j)).getLikeNum() * 0.3;
+                double heatViewsNum = (double) (dto.get(j)).getViewsNum() * 0.2;
+                double heatTime = Long.parseLong((dto.get(j)).getCreateTime()) > System.currentTimeMillis() - 604800000L ? (double) 10000.0F : (double) 0.0F;
                 double heat = heatTime + heatCommentNum + heatLikeNum + heatViewsNum;
-                double previousHeatCommentNum = (double) ((IntactArticleDTO) dto.get(j + 1)).getCommentNum() * (double) 0.5F;
-                double previousHeatLikeNum = (double) ((IntactArticleDTO) dto.get(j + 1)).getLikeNum() * 0.3;
-                double previousHeatTime = Long.parseLong(((IntactArticleDTO) dto.get(j + 1)).getCreateTime()) > System.currentTimeMillis() - 604800000L ? (double) 10000.0F : (double) 0.0F;
-                double previousHeatViewsNum = (double) ((IntactArticleDTO) dto.get(j + 1)).getViewsNum() * 0.2;
+                double previousHeatCommentNum = (double) (dto.get(j + 1)).getCommentNum() * (double) 0.5F;
+                double previousHeatLikeNum = (double) (dto.get(j + 1)).getLikeNum() * 0.3;
+                double previousHeatTime = Long.parseLong((dto.get(j + 1)).getCreateTime()) > System.currentTimeMillis() - 604800000L ? (double) 10000.0F : (double) 0.0F;
+                double previousHeatViewsNum = (double) (dto.get(j + 1)).getViewsNum() * 0.2;
                 double previousHeat = previousHeatTime + previousHeatCommentNum + previousHeatLikeNum + previousHeatViewsNum;
                 if (heat < previousHeat) {
                     Collections.swap(dto, j, j + 1);
@@ -573,11 +574,11 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
         }
 
         List<List<IntactArticleDTO>> partition = Lists.partition(dto, 10);
-        return (List) partition.get(0);
+        return partition.get(0);
     }
 
     public Object searchMyGoods(String userId, String content, String type) {
-        Page<CommodityVos> page = new Page(1L, 15L);
+        Page<CommodityVos> page = new Page<>(1L, 15L);
 
         MPJLambdaWrapper<YmIntactGoods> wrapper = new MPJLambdaWrapper<YmIntactGoods>()
                 .select(YmIntactGoods::getIntactGoodsId, YmIntactGoods::getType)
@@ -593,9 +594,9 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
 
         IPage<CommodityVos> commodityVosIPage;
         if (type.equals("1")) {
-            commodityVosIPage = this.intactGoodsMapper.selectJoinPage(page, CommodityVos.class, (MPJBaseJoin) wrapper.eq(YmIntactGoods::getType, "1"));
+            commodityVosIPage = this.intactGoodsMapper.selectJoinPage(page, CommodityVos.class, wrapper.eq(YmIntactGoods::getType, "1"));
         } else if (type.equals("0")) {
-            commodityVosIPage = this.intactGoodsMapper.selectJoinPage(page, CommodityVos.class, (MPJBaseJoin) wrapper.eq(YmIntactGoods::getType, "0"));
+            commodityVosIPage = this.intactGoodsMapper.selectJoinPage(page, CommodityVos.class, wrapper.eq(YmIntactGoods::getType, "0"));
         } else {
             commodityVosIPage = this.intactGoodsMapper.selectJoinPage(page, CommodityVos.class, wrapper);
         }
@@ -604,8 +605,8 @@ public class YmIntactArticleServiceImpl extends MPJBaseServiceImpl<YmIntactArtic
     }
 
     public Page<SearchArticleVo> allSearchMysql(String userId, String str, Integer page) {
-        ArrayList<SearchArticleVo> searchArticleVos = new ArrayList();
-        Page<SearchArticleVo> intactArticleVosPage = new Page((long) page, 10L);
+        ArrayList<SearchArticleVo> searchArticleVos = new ArrayList<>();
+        Page<SearchArticleVo> intactArticleVosPage = new Page<>((long) page, 10L);
         List<YmArticle> allArticle = this.ymArticleMapper.getAllSearch(str, (page - 1) * 10);
         Integer articleCount = this.ymArticleMapper.getArticleCount(str);
         intactArticleVosPage.setCurrent((long) page);

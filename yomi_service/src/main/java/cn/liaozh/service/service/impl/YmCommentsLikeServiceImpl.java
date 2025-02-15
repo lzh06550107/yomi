@@ -27,23 +27,20 @@ public class YmCommentsLikeServiceImpl extends MPJBaseServiceImpl<YmCommentsLike
     @Autowired
     private WebSocketUtils webSocketUtils;
 
-    public YmCommentsLikeServiceImpl() {
-    }
-
     public boolean commentsLike(String userId, String id) {
-        QueryWrapper<YmCommentsLike> queryWrapper = new QueryWrapper();
+        QueryWrapper<YmCommentsLike> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("comment_id", id);
         queryWrapper.eq("user_id", userId);
-        YmCommentsLike commentsLike = (YmCommentsLike)this.getOne(queryWrapper);
+        YmCommentsLike commentsLike = this.getOne(queryWrapper);
         if (commentsLike == null) {
-            ((LambdaUpdateChainWrapper)((LambdaUpdateChainWrapper)this.commentsService.lambdaUpdate().eq(YmComments::getCommentId, id)).setSql(" like_num = like_num+1 ")).update();
+            this.commentsService.lambdaUpdate().eq(YmComments::getCommentId, id).setSql(" like_num = like_num+1 ").update();
             YmCommentsLike commentsLike1 = new YmCommentsLike();
             commentsLike1.setCommentId(id);
             commentsLike1.setUserId(userId);
             if (this.save(commentsLike1)) {
                 YmChatMsg ymChatMsg = new YmChatMsg();
                 ymChatMsg.setSendUserId(userId);
-                YmCommentsLike one = (YmCommentsLike)((LambdaQueryChainWrapper)this.ymCommentsLikeService.lambdaQuery().eq(YmCommentsLike::getCommentId, id)).one();
+                YmCommentsLike one = this.ymCommentsLikeService.lambdaQuery().eq(YmCommentsLike::getCommentId, id).one();
                 ymChatMsg.setAcceptUserId(one.getUserId());
                 ymChatMsg.setType(MsgEnumType.LIKE_GOODS_COMMENT.getType());
                 ymChatMsg.setOperObj(new OperObjVo());
@@ -57,7 +54,7 @@ public class YmCommentsLikeServiceImpl extends MPJBaseServiceImpl<YmCommentsLike
         } else {
             boolean bul = commentsLike.getLikeState().equals(LikeState.LIKE.getCode());
             commentsLike.setLikeState(bul ? "1" : "0");
-            ((LambdaUpdateChainWrapper)this.commentsService.lambdaUpdate().eq(YmComments::getCommentId, id)).setSql(bul, " like_num = like_num-1 ").setSql(!bul, " like_num = like_num+1 ").update();
+            this.commentsService.lambdaUpdate().eq(YmComments::getCommentId, id).setSql(bul, " like_num = like_num-1 ").setSql(!bul, " like_num = like_num+1 ").update();
             this.updateById(commentsLike);
             return true;
         }

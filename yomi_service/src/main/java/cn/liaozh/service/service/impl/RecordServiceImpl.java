@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RecordServiceImpl extends MPJBaseServiceImpl<RecordMapper, Record> implements RecordService {
-    public RecordServiceImpl() {
-    }
+
 }
 

@@ -12,13 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping({"/ym_server/article-like"})
 public class YmArticleLikeController {
+
     @Autowired
     YmArticleLikeService ymArticleLikeService;
     @Autowired
     StringRedisTemplate redisTemplate;
-
-    public YmArticleLikeController() {
-    }
 
     @PostMapping({"{articleId}"})
     public R updateLike(String userId, @PathVariable String articleId) {

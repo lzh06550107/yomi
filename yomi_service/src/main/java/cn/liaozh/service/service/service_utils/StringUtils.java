@@ -12,9 +12,6 @@ public class StringUtils {
     @Autowired
     private AuthUserUtils authUserUtils;
 
-    public StringUtils() {
-    }
-
     public boolean strFilter(String str) {
         for(YmSensitiveWord ymSensitiveWord : this.ymSensitiveWordService.lambdaQuery().list()) {
             if (str.contains(ymSensitiveWord.getName())) {

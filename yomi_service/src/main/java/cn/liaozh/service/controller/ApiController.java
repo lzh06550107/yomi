@@ -24,9 +24,6 @@ public class ApiController {
     @Resource
     private ImgUploadService imgUploadService;
 
-    public ApiController() {
-    }
-
     @PostMapping({"upload-file"})
     public R uploadFile(MultipartFile file) {
         return R.ok().data("url", this.imgUploadService.commonUpload(file, 12));
@@ -36,11 +33,12 @@ public class ApiController {
     public R deleteFile(String userId, @RequestBody String urlPath) {
         if (Objects.isNull(userId)) {
             throw new YmException(ExecutionResult.USER_CODE_103);
-        } else {
-            String url = JSON.parseObject(urlPath).getString("url");
-            boolean isDeleted = UploadUtils.deleteImage(url);
-            return isDeleted ? R.ok() : R.error();
         }
+
+        String url = JSON.parseObject(urlPath).getString("url");
+        boolean isDeleted = UploadUtils.deleteImage(url);
+        return isDeleted ? R.ok() : R.error();
+
     }
 
     @GetMapping({"bili-fans"})

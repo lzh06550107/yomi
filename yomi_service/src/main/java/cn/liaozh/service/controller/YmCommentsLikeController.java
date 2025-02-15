@@ -12,11 +12,9 @@ import javax.websocket.server.PathParam;
 @RestController
 @RequestMapping({"/ym_server/comments-like"})
 public class YmCommentsLikeController {
+
     @Autowired
     YmCommentsLikeService commentsLikeService;
-
-    public YmCommentsLikeController() {
-    }
 
     @PutMapping
     public R commentsLike(String userId, @PathParam("id") String id) {

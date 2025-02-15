@@ -16,11 +16,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping({"/ym_server/config"})
 public class YmConfigController {
+
     @Autowired
     private YmConfigService configService;
-
-    public YmConfigController() {
-    }
 
     private boolean isAdmin(String userId) {
         return userId.equals("1610801362600222722");

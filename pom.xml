@@ -75,6 +75,13 @@
             <version>1.1.8</version> <!-- 版本号可以根据需求调整 -->
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

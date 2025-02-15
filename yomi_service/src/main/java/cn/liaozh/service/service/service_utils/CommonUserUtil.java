@@ -6,8 +6,6 @@ import cn.liaozh.service_base.enums.UserDisabled;
 import cn.liaozh.service_base.exception.YmException;
 
 public class CommonUserUtil {
-    public CommonUserUtil() {
-    }
 
     public static YmUser verificationUser(YmUser user) {
         boolean nullFlag = user == null;

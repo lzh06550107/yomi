@@ -8,6 +8,7 @@ import com.github.yulichang.base.MPJBaseService;
 import java.util.List;
 
 public interface YmArticleLikeService extends MPJBaseService<YmArticleLike> {
+
     List<ArticleLikeStatus> likeStatus(String userid, ArticleIdVo vo);
 
     boolean updateLike(String userId, String articleId);

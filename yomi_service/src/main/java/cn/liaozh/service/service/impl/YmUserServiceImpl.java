@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -86,25 +87,22 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
     @Autowired
     private YmStudentService studentService;
 
-    public YmUserServiceImpl() {
-    }
-
     public YmUser selectByOpenId(String openId) {
-        QueryWrapper<YmUser> wrapper = new QueryWrapper();
+        QueryWrapper<YmUser> wrapper = new QueryWrapper<>();
         wrapper.eq("open_id", openId);
-        return (YmUser)((YmUserMapper)this.baseMapper).selectOne(wrapper);
+        return this.baseMapper.selectOne(wrapper);
     }
 
     public YmUser selectUserById(String id) {
-        return (YmUser)((YmUserMapper)this.baseMapper).selectById(id);
+        return this.baseMapper.selectById(id);
     }
 
     public boolean updateFansNum(String userId, int flagNum) {
-        return ((YmUserMapper)this.baseMapper).updateFansNum(userId, flagNum) == 1;
+        return this.baseMapper.updateFansNum(userId, flagNum) == 1;
     }
 
     public boolean updateUserInfo(YmUser user) {
-        int updateRow = ((YmUserMapper)this.baseMapper).updateById(user);
+        int updateRow = this.baseMapper.updateById(user);
         return updateRow == 1;
     }
 
@@ -112,7 +110,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
         QueryWrapper<YmQueryUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(YmQueryUser::getQueryId, content);
         int pageSize = 10;
-        Page<YmQueryUser> ymQueryUserIPage = new Page((long)page, (long)pageSize);
+        Page<YmQueryUser> ymQueryUserIPage = new Page<>((long) page, (long) pageSize);
         Page<YmQueryUser> ymQueryUserPage = this.queryUserMapper.selectPage(ymQueryUserIPage, queryWrapper);
         if (ymQueryUserPage.getTotal() != 0L) {
             YmUser ymUser = this.lambdaQuery().eq(YmUser::getUserId, ymQueryUserPage.getRecords().get(0).getUserId()).one();
@@ -123,67 +121,67 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
             userSort.setId(ymQueryUserPage.getRecords().get(0).getQueryId());
             userSort.setFansState(fansStatus != null);
             userSort.setFollowState(mutualConcern != null);
-            ArrayList<UserSort> list = new ArrayList();
+            ArrayList<UserSort> list = new ArrayList<>();
             list.add(userSort);
-            Page<UserSort> userSortPage = new Page(1L, (long)pageSize);
+            Page<UserSort> userSortPage = new Page<>(1L, (long) pageSize);
             BeanUtils.copyProperties(ymQueryUserPage, userSortPage);
             userSortPage.setRecords(list);
             return userSortPage;
         } else {
-            Page<YmUser> userPage = new Page((long)page, (long)pageSize);
+            Page<YmUser> userPage = new Page<>((long) page, (long) pageSize);
             Page<YmUser> ymUserPage = this.userMapper.selectPage(
                     userPage,
                     new LambdaQueryWrapper<YmUser>().like(YmUser::getUserName, content)
             );
-            if (ymUserPage.getRecords().size() == 0) {
-                Page<UserSort> userSortPage = new Page(1L, (long)pageSize);
+            if (ymUserPage.getRecords().isEmpty()) {
+                Page<UserSort> userSortPage = new Page(1L, (long) pageSize);
                 BeanUtils.copyProperties(ymUserPage, userSortPage);
-                return userSortPage;
-            } else {
-                List<String> userIdList = ymUserPage.getRecords().stream().map(YmUser::getUserId).collect(Collectors.toList());
-                List<YmQueryUser> list = this.queryUserService.lambdaQuery().in(YmQueryUser::getUserId, userIdList).list();
-                Map<String, YmQueryUser> weakHashMap = new WeakHashMap();
-                list.forEach((temp) -> weakHashMap.put(temp.getUserId(), temp));
-
-                Set<String> keys = this.fansService.lambdaQuery()
-                        .eq(YmFans::getUserId, userId)
-                        .in(YmFans::getAnswerUserId, userIdList)
-                        .list()
-                        .stream()
-                        .map(temp -> temp.getUserId() + "::" + temp.getAnswerUserId())
-                        .collect(Collectors.toSet());
-
-                // 优化 keyss 的逻辑
-                Map<String, YmFans> fansMap = this.fansService.lambdaQuery()
-                        .in(YmFans::getAnswerUserId, userIdList) // 只查询 answerUserId 在 userIdList 中的记录
-                        .list()
-                        .stream()
-                        .collect(Collectors.toMap(YmFans::getAnswerUserId, Function.identity())); // 构建以 answerUserId 为 key 的 Map
-
-                Set<String> keyss = this.fansService.lambdaQuery()
-                        .eq(YmFans::getUserId, userId)
-                        .in(YmFans::getAnswerUserId, userIdList)
-                        .list()
-                        .stream()
-                        .map(temp -> {
-                            YmFans one = fansMap.get(temp.getAnswerUserId()); // 从 Map 中获取，避免再次查询
-                            return one == null ? null : one.getUserId() + "::" + one.getAnswerUserId();
-                        })
-                        .collect(Collectors.toSet());
-
-                List<UserSort> userSortList = ymUserPage.getRecords().stream().map((temp) -> {
-                    UserSort userSort = new UserSort();
-                    BeanUtils.copyProperties(temp, userSort);
-                    userSort.setId(weakHashMap.get(temp.getUserId()).getQueryId());
-                    userSort.setFansState(keys.contains(userId + "::" + temp.getUserId()));
-                    userSort.setFollowState(keyss.contains(temp.getUserId() + "::" + userId));
-                    return userSort;
-                }).collect(Collectors.toList());
-                Page<UserSort> userSortPage = new Page(1L, (long)pageSize);
-                BeanUtils.copyProperties(ymUserPage, userSortPage);
-                userSortPage.setRecords(userSortList);
                 return userSortPage;
             }
+            List<String> userIdList = ymUserPage.getRecords().stream().map(YmUser::getUserId).collect(Collectors.toList());
+            List<YmQueryUser> list = this.queryUserService.lambdaQuery().in(YmQueryUser::getUserId, userIdList).list();
+            Map<String, YmQueryUser> weakHashMap = new WeakHashMap();
+            list.forEach((temp) -> weakHashMap.put(temp.getUserId(), temp));
+
+            Set<String> keys = this.fansService.lambdaQuery()
+                    .eq(YmFans::getUserId, userId)
+                    .in(YmFans::getAnswerUserId, userIdList)
+                    .list()
+                    .stream()
+                    .map(temp -> temp.getUserId() + "::" + temp.getAnswerUserId())
+                    .collect(Collectors.toSet());
+
+            // 优化 keyss 的逻辑
+            Map<String, YmFans> fansMap = this.fansService.lambdaQuery()
+                    .in(YmFans::getAnswerUserId, userIdList) // 只查询 answerUserId 在 userIdList 中的记录
+                    .list()
+                    .stream()
+                    .collect(Collectors.toMap(YmFans::getAnswerUserId, Function.identity())); // 构建以 answerUserId 为 key 的 Map
+
+            Set<String> keyss = this.fansService.lambdaQuery()
+                    .eq(YmFans::getUserId, userId)
+                    .in(YmFans::getAnswerUserId, userIdList)
+                    .list()
+                    .stream()
+                    .map(temp -> {
+                        YmFans one = fansMap.get(temp.getAnswerUserId()); // 从 Map 中获取，避免再次查询
+                        return one == null ? null : one.getUserId() + "::" + one.getAnswerUserId();
+                    })
+                    .collect(Collectors.toSet());
+
+            List<UserSort> userSortList = ymUserPage.getRecords().stream().map((temp) -> {
+                UserSort userSort = new UserSort();
+                BeanUtils.copyProperties(temp, userSort);
+                userSort.setId(weakHashMap.get(temp.getUserId()).getQueryId());
+                userSort.setFansState(keys.contains(userId + "::" + temp.getUserId()));
+                userSort.setFollowState(keyss.contains(temp.getUserId() + "::" + userId));
+                return userSort;
+            }).collect(Collectors.toList());
+            Page<UserSort> userSortPage = new Page<>(1L, (long) pageSize);
+            BeanUtils.copyProperties(ymUserPage, userSortPage);
+            userSortPage.setRecords(userSortList);
+            return userSortPage;
+
         }
     }
 
@@ -193,7 +191,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
         BeanUtils.copyProperties(ymUser, fullUserVo);
         List<YmIntactArticle> list = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getUserId, id).list();
         List<String> collect = list.stream().map(YmIntactArticle::getArticleId).collect(Collectors.toList());
-        if (collect.size() == 0) {
+        if (collect.isEmpty()) {
             fullUserVo.setReadNum(0);
         } else {
             List<YmArticle> articleList = this.articleService.listByIds(collect);
@@ -272,17 +270,17 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
 
         Map<String, Object> map = this.userMapper.selectJoinMap(wrapper);
         if (map == null) {
-            return new HashMap();
+            return new HashMap<>();
         } else {
             if (map.get("class_id") != null) {
-                LambdaQueryWrapper<YmClass> queryWrapper = new LambdaQueryWrapper();
+                LambdaQueryWrapper<YmClass> queryWrapper = new LambdaQueryWrapper<>();
                 String parentId = map.get("class_id").toString();
                 queryWrapper.eq(YmClass::getClassId, parentId);
-                YmClass Ymclass = (YmClass)this.classMapper.selectOne(queryWrapper);
+                YmClass Ymclass = this.classMapper.selectOne(queryWrapper);
                 map.put("department", Ymclass.getTitle());
-                LambdaQueryWrapper<YmClass> queryWrappers = new LambdaQueryWrapper();
+                LambdaQueryWrapper<YmClass> queryWrappers = new LambdaQueryWrapper<>();
                 queryWrappers.eq(YmClass::getClassId, Ymclass.getParentId());
-                YmClass Ymclasss = (YmClass)this.classMapper.selectOne(queryWrappers);
+                YmClass Ymclasss = this.classMapper.selectOne(queryWrappers);
                 map.put("school", Ymclasss.getTitle());
                 map.put("parentId", Ymclass.getParentId());
             }
@@ -292,11 +290,11 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
     }
 
     public List<Map<String, Object>> schoolInfo(String userId) {
-        QueryWrapper<YmClass> wrapper = new QueryWrapper();
+        QueryWrapper<YmClass> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(YmClass::getParentId, "0");
         List<YmClass> ymClasses = this.classMapper.selectList(wrapper);
         List<Map<String, Object>> collect = ymClasses.stream().map((temp) -> {
-            Map<String, Object> objectHashMap = new HashMap();
+            Map<String, Object> objectHashMap = new HashMap<>();
             objectHashMap.put("classId", temp.getClassId());
             objectHashMap.put("title", temp.getTitle());
             return objectHashMap;
@@ -305,11 +303,11 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
     }
 
     public List<Map<String, Object>> department(String classId) {
-        QueryWrapper<YmClass> wrapper = new QueryWrapper();
+        QueryWrapper<YmClass> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(YmClass::getParentId, classId);
         List<YmClass> ymClasses = this.classMapper.selectList(wrapper);
         List<Map<String, Object>> collect = ymClasses.stream().map((temp) -> {
-            Map<String, Object> objectHashMap = new HashMap();
+            Map<String, Object> objectHashMap = new HashMap<>();
             objectHashMap.put("classId", temp.getClassId());
             objectHashMap.put("title", temp.getTitle());
             return objectHashMap;
@@ -322,29 +320,31 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
         Integer strNumber = infoVo.getStrNumber();
         if (Objects.isNull(strNumber)) {
             throw new YmException(ExecutionResult.NUMBER_CODE_406);
-        } else {
-            YmClass ymClass = this.classMapper.selectById(classId);
-            YmStudent student = this.studentService.getById(strNumber);
-            if (!Objects.isNull(student) && student.getName().equals(infoVo.getStrName()) && student.getDept().equals(ymClass.getTitle())) {
-                Integer userAttestCount = this.strAttestService.lambdaQuery().eq(YmStrAttest::getUserId, userId).count();
-                if (userAttestCount >= 1) {
-                    throw new YmException(ExecutionResult.AUTH_CODE_603);
-                } else {
-                    Integer attestCount = this.strAttestService.lambdaQuery().eq(YmStrAttest::getStrNumber, strNumber).count();
-                    if (attestCount >= 1) {
-                        throw new YmException(ExecutionResult.AUTH_CODE_602);
-                    } else {
-                        this.lambdaUpdate().eq(YmUser::getUserId, userId).set(YmUser::getClassId, classId).update();
-                        YmStrAttest ymStrAttest = new YmStrAttest();
-                        BeanUtils.copyProperties(infoVo, ymStrAttest);
-                        ymStrAttest.setUserId(userId);
-                        return this.strAttestService.save(ymStrAttest);
-                    }
-                }
-            } else {
-                throw new YmException(ExecutionResult.NUMBER_CODE_406);
-            }
         }
+
+        YmClass ymClass = this.classMapper.selectById(classId);
+        YmStudent student = this.studentService.getById(strNumber);
+        if (!Objects.isNull(student) && student.getName().equals(infoVo.getStrName()) && student.getDept().equals(ymClass.getTitle())) {
+            Integer userAttestCount = this.strAttestService.lambdaQuery().eq(YmStrAttest::getUserId, userId).count();
+            if (userAttestCount >= 1) {
+                throw new YmException(ExecutionResult.AUTH_CODE_603);
+            }
+
+            Integer attestCount = this.strAttestService.lambdaQuery().eq(YmStrAttest::getStrNumber, strNumber).count();
+            if (attestCount >= 1) {
+                throw new YmException(ExecutionResult.AUTH_CODE_602);
+            } else {
+                this.lambdaUpdate().eq(YmUser::getUserId, userId).set(YmUser::getClassId, classId).update();
+                YmStrAttest ymStrAttest = new YmStrAttest();
+                BeanUtils.copyProperties(infoVo, ymStrAttest);
+                ymStrAttest.setUserId(userId);
+                return this.strAttestService.save(ymStrAttest);
+            }
+
+        } else {
+            throw new YmException(ExecutionResult.NUMBER_CODE_406);
+        }
+
     }
 
     public List<UserInfoVo> activeUser(String userId) {
@@ -379,7 +379,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
         List<YmQueryUser> queryUsers = this.queryUserService.lambdaQuery().in(YmQueryUser::getUserId, userIdList).list();
         HashMap<String, YmQueryUser> stringYmQueryUserHashMap = new HashMap();
         queryUsers.forEach((temp) -> {
-            YmQueryUser var10000 = (YmQueryUser)stringYmQueryUserHashMap.put(temp.getUserId(), temp);
+            YmQueryUser var10000 = (YmQueryUser) stringYmQueryUserHashMap.put(temp.getUserId(), temp);
         });
         List<UserInfoVo> userInfoVos = new ArrayList();
         ymUsers.forEach((temp) -> {
@@ -387,7 +387,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
             BeanUtils.copyProperties(temp, userInfoVo);
             userInfoVo.setFansState(fansList.contains(userId + "::" + temp.getUserId()));
             userInfoVo.setFollowState(followed.contains(temp.getUserId() + "::" + userId));
-            userInfoVo.setId(((YmQueryUser)stringYmQueryUserHashMap.get(temp.getUserId())).getQueryId());
+            userInfoVo.setId(((YmQueryUser) stringYmQueryUserHashMap.get(temp.getUserId())).getQueryId());
             boolean goodUser = this.userTagUtils.isGoodUser(temp.getUserId());
             if (goodUser) {
                 userInfoVo.setGoodUser(1);
@@ -396,7 +396,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
             userInfoVos.add(userInfoVo);
         });
 
-        for(UserInfoVo userInfoVo : userInfoVos) {
+        for (UserInfoVo userInfoVo : userInfoVos) {
             userInfoVo.setUserIdentity(0);
         }
 
@@ -404,7 +404,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
     }
 
     public IPage<CommodityVos> inStock(String userId, Integer type, Integer page) {
-        Page<CommodityVos> pageNum = new Page((long)page, 15L);
+        Page<CommodityVos> pageNum = new Page((long) page, 15L);
 
         MPJLambdaWrapper<YmIntactGoods> wrapper = new MPJLambdaWrapper<YmIntactGoods>()
                 .select(YmIntactGoods::getIntactGoodsId, YmIntactGoods::getType)
@@ -441,7 +441,7 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
     }
 
     public boolean modifyGoods(String userId, UpdateGoodsVo goodsVo) {
-        YmIntactGoods byId = (YmIntactGoods)this.intactGoodsService.getById(goodsVo.getIntactGoodsId());
+        YmIntactGoods byId = (YmIntactGoods) this.intactGoodsService.getById(goodsVo.getIntactGoodsId());
         if (byId.getUserId().equals(userId)) {
             YmGoods ymGoods = new YmGoods();
             BeanUtils.copyProperties(goodsVo, ymGoods);

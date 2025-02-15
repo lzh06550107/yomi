@@ -47,9 +47,6 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
     @Autowired
     private YmUserService userService;
 
-    public YmCommentsServiceImpl() {
-    }
-
     public IPage<CommentsVo> getLevelOneComments(String userId, String id, Integer page) {
 
         MPJLambdaWrapper<YmComments> wrapper = new MPJLambdaWrapper<YmComments>()
@@ -63,7 +60,7 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
                 .orderByDesc(YmComments::getCreateTime, YmComments::getUpdateTime);
 
         Page<CommentsVo> ymFansIPages = new Page((long)page, 5L);
-        IPage<CommentsVo> ymCommentsIPage = ((YmCommentsMapper)this.baseMapper).selectJoinPage(ymFansIPages, CommentsVo.class, wrapper);
+        IPage<CommentsVo> ymCommentsIPage = this.baseMapper.selectJoinPage(ymFansIPages, CommentsVo.class, wrapper);
         List<String> likeId = this.commentsLikeService.lambdaQuery().eq(YmCommentsLike::getUserId, userId).eq(YmCommentsLike::getLikeState, "0").list().stream().map(YmCommentsLike::getCommentId).collect(Collectors.toList());
         ymCommentsIPage.getRecords().forEach((temp) -> {
             IPage<CommentsVo> levelTwoComments = this.getLevelTwoComments(userId, temp.getCommentId(), page);
@@ -80,9 +77,9 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
 
     public IPage<CommentsVo> getLevelTwoComments(String userId, String id, Integer page) {
         List<String> likeId = this.commentsLikeService.lambdaQuery().eq(YmCommentsLike::getUserId, userId).eq(YmCommentsLike::getLikeState, "0").list().stream().map(YmCommentsLike::getCommentId).collect(Collectors.toList());
-        List<YmComments> ymCommentsList = ((LambdaQueryChainWrapper)this.lambdaQuery().eq(YmComments::getParentId, id)).list();
-        ArrayList<String> list = new ArrayList();
-        if (ymCommentsList.size() != 0) {
+        List<YmComments> ymCommentsList = this.lambdaQuery().eq(YmComments::getParentId, id).list();
+        ArrayList<String> list = new ArrayList<>();
+        if (!ymCommentsList.isEmpty()) {
             this.cycleGetCommentId(ymCommentsList, list);
             MPJLambdaWrapper<YmComments> wrapper = new MPJLambdaWrapper<YmComments>()
                     .select(YmComments::getCommentId, YmComments::getUserId, YmComments::getParentId, YmComments::getContent, YmComments::getLikeNum, YmComments::getLink, YmComments::getCreateTime)
@@ -158,7 +155,7 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
                 this.webSocketUtils.sendUnreadMessagesNum(ymChatMsg);
             }
 
-            YmUser user = (YmUser)this.userService.getById(userId);
+            YmUser user = this.userService.getById(userId);
             CommentsVo comments = new CommentsVo();
             BeanUtils.copyProperties(ymComments, comments);
             String wasRepliedName = null;
@@ -182,10 +179,10 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
         if (ymComments == null) {
             return false;
         } else if (ymComments.getParentId().equals("0")) {
-            List<String> list = new ArrayList();
+            List<String> list = new ArrayList<>();
             this.cycleGetCommentId(this.baseMapper.selectList(queryWrapper), list);
             QueryWrapper<YmComments> qr = new QueryWrapper<>();
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 return this.baseMapper.delete(queryWrapper) > 0;
             } else {
                 qr.in("comment_id", list);
@@ -201,12 +198,12 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
     )
     public List<AllCommentsVo> getComments(String userId, String id) {
         Page<CommentsVo> levelOneComments = (Page)this.getLevelOneComments(userId, id, 1);
-        List<AllCommentsVo> level = new ArrayList();
+        List<AllCommentsVo> level = new ArrayList<>();
         levelOneComments.getRecords().forEach((temp) -> {
-            QueryWrapper<YmCommentsLike> queryWrapper = new QueryWrapper();
+            QueryWrapper<YmCommentsLike> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("comment_id", temp.getCommentId());
             queryWrapper.eq("user_id", userId);
-            YmCommentsLike commentsLike = (YmCommentsLike)this.commentsLikeService.getOne(queryWrapper);
+            YmCommentsLike commentsLike = this.commentsLikeService.getOne(queryWrapper);
             if (commentsLike == null) {
                 temp.setStatus(false);
             } else {
@@ -223,7 +220,7 @@ public class YmCommentsServiceImpl extends MPJBaseServiceImpl<YmCommentsMapper, 
                 QueryWrapper<YmCommentsLike> queryWrapper = new QueryWrapper();
                 queryWrapper.eq("comment_id", temps.getCommentId());
                 queryWrapper.eq("user_id", userId);
-                YmCommentsLike commentsLike = (YmCommentsLike)this.commentsLikeService.getOne(queryWrapper);
+                YmCommentsLike commentsLike = this.commentsLikeService.getOne(queryWrapper);
                 if (commentsLike == null) {
                     temps.setStatus(false);
                 } else {

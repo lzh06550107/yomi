@@ -21,9 +21,6 @@ public class AuthUserUtils {
     @Value("${wechat.secret}")
     private String secret = "53ab5c5e906a78a5515573459f8717f7";
 
-    public AuthUserUtils() {
-    }
-
     public boolean isAuthUser(String userId) {
         System.out.println(userId);
         return true;

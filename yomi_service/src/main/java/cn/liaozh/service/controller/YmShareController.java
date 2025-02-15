@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping({"/ym_server/share"})
 public class YmShareController {
+
     @Autowired
     private YmShareService shareService;
-
-    public YmShareController() {
-    }
 
     @PostMapping({"addShare"})
     public R addShare(String userId, @RequestBody YmShare share) {

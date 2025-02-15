@@ -7,7 +7,6 @@ import cn.liaozh.service.service.YmChatMsgService;
 import cn.liaozh.service.service.YmUserService;
 import cn.liaozh.service.websocket.entity.Message;
 import cn.liaozh.service.websocket.entity.UnreadMessages;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -22,10 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class WebSocketUtils {
     private static final Logger log = LoggerFactory.getLogger(WebSocketUtils.class);
-    public static final Map<String, Session> ONLINE_USER_SESSIONS = new ConcurrentHashMap();
-
-    public WebSocketUtils() {
-    }
+    public static final Map<String, Session> ONLINE_USER_SESSIONS = new ConcurrentHashMap<>();
 
     public static boolean sendMessage(Session session, String message) {
         if (session == null) {
@@ -54,13 +50,13 @@ public class WebSocketUtils {
         YmChatMsgService service = act.getBean(YmChatMsgService.class);
         service.save(ymChatMsg);
         msg.setMsgChatId(ymChatMsg.getId());
-        YmUser user = (YmUser)((LambdaQueryChainWrapper)userService.lambdaQuery().eq(YmUser::getUserId, msg.getUserId())).one();
-        YmUser toUser = (YmUser)((LambdaQueryChainWrapper)userService.lambdaQuery().eq(YmUser::getUserId, msg.getToUserId())).one();
+        YmUser user = userService.lambdaQuery().eq(YmUser::getUserId, msg.getUserId()).one();
+        YmUser toUser = userService.lambdaQuery().eq(YmUser::getUserId, msg.getToUserId()).one();
         msg.setAvatar(user.getAvatar());
         msg.setUserName(user.getUserName());
         msg.setToUserAvatar(toUser.getAvatar());
         msg.setToUserName(toUser.getUserName());
-        Session session = (Session)ONLINE_USER_SESSIONS.get(msg.getToUserId());
+        Session session = ONLINE_USER_SESSIONS.get(msg.getToUserId());
         if (session != null) {
             sendMessage(session, (new JSONObject(msg)).toString());
         }
@@ -69,9 +65,9 @@ public class WebSocketUtils {
 
     public boolean sendUnreadMessagesNum(YmChatMsg ymChatMsg) {
         ApplicationContext act = ApplicationContextRegister.getApplicationContext();
-        YmChatMsgService service = (YmChatMsgService)act.getBean(YmChatMsgService.class);
+        YmChatMsgService service = act.getBean(YmChatMsgService.class);
         if (!ymChatMsg.getAcceptUserId().equals(ymChatMsg.getSendUserId()) && service.save(ymChatMsg)) {
-            Session session = (Session)ONLINE_USER_SESSIONS.get(ymChatMsg.getAcceptUserId());
+            Session session = ONLINE_USER_SESSIONS.get(ymChatMsg.getAcceptUserId());
             return session != null ? sendMessage(session, (new JSONObject(this.getUnreadMessages(ymChatMsg.getAcceptUserId()))).toString()) : true;
         } else {
             return false;
@@ -79,7 +75,7 @@ public class WebSocketUtils {
     }
 
     public void flushUnreadMessagesNum(String userId) {
-        Session session = (Session)ONLINE_USER_SESSIONS.get(userId);
+        Session session = ONLINE_USER_SESSIONS.get(userId);
         if (session != null) {
             sendMessage(session, (new JSONObject(this.getUnreadMessages(userId))).toString());
         }

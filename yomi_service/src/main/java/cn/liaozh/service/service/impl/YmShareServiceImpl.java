@@ -21,15 +21,12 @@ public class YmShareServiceImpl extends MPJBaseServiceImpl<YmShareMapper, YmShar
     @Autowired
     private YmArticleService ymArticleService;
 
-    public YmShareServiceImpl() {
-    }
-
     @Transactional
     public boolean insertShare(YmShare share) {
         boolean save = this.save(share);
         String articleId = share.getArticleId();
-        YmIntactArticle one = (YmIntactArticle)((LambdaQueryChainWrapper)this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIntactArticleId, articleId)).one();
-        boolean update = ((LambdaUpdateChainWrapper)((LambdaUpdateChainWrapper)this.ymArticleService.lambdaUpdate().eq(YmArticle::getArticleId, one.getArticleId())).setSql("share_num = share_num + 1")).update();
+        YmIntactArticle one = this.intactArticleService.lambdaQuery().eq(YmIntactArticle::getIntactArticleId, articleId).one();
+        boolean update = this.ymArticleService.lambdaUpdate().eq(YmArticle::getArticleId, one.getArticleId()).setSql("share_num = share_num + 1").update();
         return save && update;
     }
 }

@@ -13,11 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping({"/ym_server/carousel-figure"})
 public class YmCarouselFigureController {
+
     @Autowired
     private YmCarouselFigureService ymCarouselFigureService;
-
-    public YmCarouselFigureController() {
-    }
 
     @GetMapping
     public R getCarouselFigure(String userId) {

@@ -58,9 +58,6 @@ public class YmIntactGoodsServiceImpl extends MPJBaseServiceImpl<YmIntactGoodsMa
     @Autowired
     private UserTagUtils userTagUtils;
 
-    public YmIntactGoodsServiceImpl() {
-    }
-
     public IPage<CommodityVos> getGoods(String familyId, String sort, String userId, Integer page) {
 
         MPJLambdaWrapper<YmIntactGoods> mpjLambdaWrapper = new MPJLambdaWrapper<YmIntactGoods>()
@@ -93,7 +90,7 @@ public class YmIntactGoodsServiceImpl extends MPJBaseServiceImpl<YmIntactGoodsMa
                 wrapper = mpjLambdaWrapper.orderByDesc(YmGoods::getUpdateTime, YmGoods::getCreateTime);
         }
 
-        Page<CommodityVos> pages = new Page((long)page, 15L);
+        Page<CommodityVos> pages = new Page<>((long)page, 15L);
         return this.intactGoodsMapper.selectJoinPage(pages, CommodityVos.class, wrapper);
     }
 
@@ -108,8 +105,8 @@ public class YmIntactGoodsServiceImpl extends MPJBaseServiceImpl<YmIntactGoodsMa
             }
         }
 
-        HashMap<String, Object> fansMap = new HashMap();
-        QueryWrapper<YmFans> fansWrappers = new QueryWrapper();
+        HashMap<String, Object> fansMap = new HashMap<>();
+        QueryWrapper<YmFans> fansWrappers = new QueryWrapper<>();
         fansWrappers.eq("user_id", userId).eq("is_deleted", "0");
         List<YmFans> lists = this.fansService.list(fansWrappers);
         lists.forEach((temp) -> fansMap.put(temp.getAnswerUserId() + "::" + temp.getUserId(), 1));
@@ -160,7 +157,7 @@ public class YmIntactGoodsServiceImpl extends MPJBaseServiceImpl<YmIntactGoodsMa
 
     public boolean deleteOneGoods(String userId, String id) {
         YmIntactGoods byId = this.getById(id);
-        return byId.getUserId().equals(userId) ? this.removeById(id) : false;
+        return byId.getUserId().equals(userId) && this.removeById(id);
     }
 
     public IPage<CommodityVos> searchAll(String userId, String content, String sort, String familyId, Integer page) {
@@ -207,10 +204,10 @@ public class YmIntactGoodsServiceImpl extends MPJBaseServiceImpl<YmIntactGoodsMa
     }
 
     public boolean feedback(String userId, Opinion str) {
-        QueryWrapper<YmUser> wrapper = new QueryWrapper();
-        wrapper.select(new String[]{"user_id", "user_name"});
+        QueryWrapper<YmUser> wrapper = new QueryWrapper<>();
+        wrapper.select("user_id", "user_name");
         wrapper.eq("user_id", userId);
-        YmUser user = (YmUser)this.userService.getOne(wrapper);
+        YmUser user = this.userService.getOne(wrapper);
         if (ObjectUtils.notEmpty(user)) {
             boolean isSave = this.baseMapper.insertIdeaFeedback(user.getUserId(), str.getStr(), System.currentTimeMillis());
             YmChatMsg ymChatMsg = new YmChatMsg();

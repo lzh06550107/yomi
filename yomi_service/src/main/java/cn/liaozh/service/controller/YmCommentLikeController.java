@@ -15,9 +15,6 @@ public class YmCommentLikeController {
     @Resource
     private YmCommentLikeService ymCommentLikeService;
 
-    public YmCommentLikeController() {
-    }
-
     @PostMapping
     public R commentsLike(String userId, @PathParam("commentId") String commentId) {
         boolean isSuccess = this.ymCommentLikeService.commentsLike(userId, commentId);

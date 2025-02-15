@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmStrAttestServiceImpl extends MPJBaseServiceImpl<YmStrAttestMapper, YmStrAttest> implements YmStrAttestService {
-    public YmStrAttestServiceImpl() {
-    }
+
 }

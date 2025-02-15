@@ -9,6 +9,7 @@ import com.github.yulichang.base.MPJBaseService;
 import java.util.List;
 
 public interface YmCommentsService extends MPJBaseService<YmComments> {
+
     Object getLevelOneComments(String userId, String id, Integer page);
 
     Object getLevelTwoComments(String userId, String id, Integer page);

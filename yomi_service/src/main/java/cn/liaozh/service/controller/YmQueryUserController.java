@@ -11,11 +11,9 @@ import javax.annotation.Resource;
 @RequestMapping({"/ym_server/search"})
 @CrossOrigin
 public class YmQueryUserController {
+
     @Resource
     private YmQueryUserService queryUserService;
-
-    public YmQueryUserController() {
-    }
 
     @GetMapping({"user/{queryId}"})
     public R searchUser(@PathVariable String queryId) {

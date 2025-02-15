@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class YmCaptchaServiceImpl extends ServiceImpl<YmCaptchaMapper, YmCaptcha> implements YmCaptchaService {
-    public YmCaptchaServiceImpl() {
-    }
+
 }

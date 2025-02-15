@@ -27,15 +27,13 @@ import java.util.Objects;
 @RequestMapping({"/ym_server/IntactGoods"})
 @Validated
 public class YmIntactGoodsController {
+
     @Autowired
     private YmIntactGoodsService ymIntactGoodsService;
     @Autowired
     private AuthUserUtils authUserUtils;
     @Autowired
     private StringUtils stringUtils;
-
-    public YmIntactGoodsController() {
-    }
 
     @GetMapping({"list"})
     public R getGoods(String userId, @RequestParam(required = false,value = "content") String content, @RequestParam(value = "page",defaultValue = "1") Integer page, @RequestParam(value = "sort",defaultValue = "0") String sort, @RequestParam(required = false,value = "familyId",defaultValue = "0") String familyId) {

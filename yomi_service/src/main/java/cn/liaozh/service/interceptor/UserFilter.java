@@ -23,13 +23,13 @@ public class UserFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        HttpServletRequest httpRequest = (HttpServletRequest)request;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         Map<String, String[]> paramMap = new HashMap(request.getParameterMap());
         String token = httpRequest.getHeader("token");
         if (token == null) {
             chain.doFilter(request, response);
         } else {
-            logger.info("传递修改后的request");
+            logger.info("传递修改后的 request");
             String userId = JwtUtil.getUserIdByToken(token);
             paramMap.put("userId", new String[]{String.valueOf(userId)});
             RequestWrapper parameterRequestWrapper = new RequestWrapper(httpRequest, paramMap);

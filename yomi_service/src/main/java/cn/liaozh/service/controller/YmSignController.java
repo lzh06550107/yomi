@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping({"/ym_server/sign"})
 public class YmSignController {
+
     @Autowired
     private YmSignService ymSignService;
-
-    public YmSignController() {
-    }
 
     @PostMapping({"/in"})
     public R postSignIn(String userId) {

@@ -40,14 +40,11 @@ public class YmCommentLikeServiceImpl extends MPJBaseServiceImpl<YmCommentLikeMa
     @Autowired
     private YmChatMsgService chatMsgService;
 
-    public YmCommentLikeServiceImpl() {
-    }
-
     public YmCommentLike queryUserLike(String userId, String commentId) {
         QueryWrapper<YmCommentLike> queryWrapper = new QueryWrapper();
         queryWrapper.eq("user_id", userId);
         queryWrapper.eq("comment_id", commentId);
-        return (YmCommentLike)this.ymCommentLikeMapper.selectOne(queryWrapper);
+        return this.ymCommentLikeMapper.selectOne(queryWrapper);
     }
 
     public Integer insertLike(YmCommentLike ymCommentLike) {
@@ -69,7 +66,7 @@ public class YmCommentLikeServiceImpl extends MPJBaseServiceImpl<YmCommentLikeMa
             rollbackFor = {Exception.class}
     )
     public void updateState(String userId, String commentId) {
-        int rows = ((YmCommentLikeMapper)this.baseMapper).updateState(userId, commentId);
+        int rows = this.baseMapper.updateState(userId, commentId);
         if (rows == 1) {
             this.ymCommentMapper.updateLike(6, "1499577297278083074");
         } else {
@@ -96,19 +93,19 @@ public class YmCommentLikeServiceImpl extends MPJBaseServiceImpl<YmCommentLikeMa
 
     @Transactional
     public boolean commentsLike(String userId, String id) {
-        QueryWrapper<YmCommentLike> queryWrapper = new QueryWrapper();
+        QueryWrapper<YmCommentLike> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("comment_id", id);
         queryWrapper.eq("user_id", userId);
-        YmCommentLike commentsLike = (YmCommentLike)this.getOne(queryWrapper);
+        YmCommentLike commentsLike = this.getOne(queryWrapper);
         if (commentsLike == null) {
-            ((LambdaUpdateChainWrapper)((LambdaUpdateChainWrapper)this.ymCommentService.lambdaUpdate().eq(YmComment::getCommentId, id)).setSql(" like_num = like_num+1 ")).update();
+            this.ymCommentService.lambdaUpdate().eq(YmComment::getCommentId, id).setSql(" like_num = like_num+1 ").update();
             YmCommentLike commentLike1 = new YmCommentLike();
             commentLike1.setCommentId(id);
             commentLike1.setUserId(userId);
             boolean save = this.ymCommentLikeService.save(commentLike1);
             YmChatMsg ymChatMsg = new YmChatMsg();
             ymChatMsg.setSendUserId(userId);
-            YmComment one = (YmComment)((LambdaQueryChainWrapper)this.ymCommentService.lambdaQuery().eq(YmComment::getCommentId, id)).one();
+            YmComment one = this.ymCommentService.lambdaQuery().eq(YmComment::getCommentId, id).one();
             ymChatMsg.setAcceptUserId(one.getUserId());
             ymChatMsg.setType(MsgEnumType.LIKE_ARTICLE_COMMENT.getType());
             ymChatMsg.setOperObj(new OperObjVo());
@@ -120,7 +117,7 @@ public class YmCommentLikeServiceImpl extends MPJBaseServiceImpl<YmCommentLikeMa
         } else {
             boolean bul = commentsLike.getLikeState().equals(LikeState.LIKE.getCode());
             commentsLike.setLikeState(bul ? "1" : "0");
-            ((LambdaUpdateChainWrapper)this.ymCommentService.lambdaUpdate().eq(YmComment::getCommentId, id)).setSql(bul, " like_num = like_num-1 ").setSql(!bul, " like_num = like_num+1 ").update();
+            this.ymCommentService.lambdaUpdate().eq(YmComment::getCommentId, id).setSql(bul, " like_num = like_num-1 ").setSql(!bul, " like_num = like_num+1 ").update();
             return this.updateById(commentsLike);
         }
     }
