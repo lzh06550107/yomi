@@ -60,7 +60,7 @@ INSERT INTO  ideafeedback  VALUES (42, '桔子酒店那你多喝水呢好的好�
 -- ----------------------------
 DROP TABLE IF EXISTS  record ;
 CREATE TABLE  record   (
-   record_id  char(19) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '操作记录id',
+   record_id  BIGINT AUTO_INCREMENT PRIMARY KEY,
    title  varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '模块标题',
    user_id  char(19) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '用户id',
    id  char(19) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '操作的id',
@@ -70,8 +70,7 @@ CREATE TABLE  record   (
    oper_param  varchar(2000) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '请求的参数',
    json_result  varchar(2000) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '返回的参数',
    error_msg  varchar(2000) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '异常信息',
-   create_time  char(13) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY ( record_id ) USING BTREE
+   create_time  char(13) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '创建时间'
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------

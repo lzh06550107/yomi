@@ -271,22 +271,23 @@ public class YmUserServiceImpl extends MPJBaseServiceImpl<YmUserMapper, YmUser> 
         Map<String, Object> map = this.userMapper.selectJoinMap(wrapper);
         if (map == null) {
             return new HashMap<>();
-        } else {
-            if (map.get("class_id") != null) {
-                LambdaQueryWrapper<YmClass> queryWrapper = new LambdaQueryWrapper<>();
-                String parentId = map.get("class_id").toString();
-                queryWrapper.eq(YmClass::getClassId, parentId);
-                YmClass Ymclass = this.classMapper.selectOne(queryWrapper);
-                map.put("department", Ymclass.getTitle());
-                LambdaQueryWrapper<YmClass> queryWrappers = new LambdaQueryWrapper<>();
-                queryWrappers.eq(YmClass::getClassId, Ymclass.getParentId());
-                YmClass Ymclasss = this.classMapper.selectOne(queryWrappers);
-                map.put("school", Ymclasss.getTitle());
-                map.put("parentId", Ymclass.getParentId());
-            }
-
-            return map;
         }
+
+        if (map.get("class_id") != null) {
+            LambdaQueryWrapper<YmClass> queryWrapper = new LambdaQueryWrapper<>();
+            String parentId = map.get("class_id").toString();
+            queryWrapper.eq(YmClass::getClassId, parentId);
+            YmClass Ymclass = this.classMapper.selectOne(queryWrapper);
+            map.put("department", Ymclass.getTitle());
+            LambdaQueryWrapper<YmClass> queryWrappers = new LambdaQueryWrapper<>();
+            queryWrappers.eq(YmClass::getClassId, Ymclass.getParentId());
+            YmClass Ymclasss = this.classMapper.selectOne(queryWrappers);
+            map.put("school", Ymclasss.getTitle());
+            map.put("parentId", Ymclass.getParentId());
+        }
+
+        return map;
+
     }
 
     public List<Map<String, Object>> schoolInfo(String userId) {
