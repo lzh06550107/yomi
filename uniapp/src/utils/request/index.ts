@@ -1,6 +1,6 @@
 import HttpRequest from './http'
 import { merge } from 'lodash-es'
-import { HttpRequestOptions, RequestHooks } from './type'
+import type { HttpRequestOptions, RequestHooks } from './type'
 import { getToken } from '../auth'
 import { RequestCodeEnum, RequestMethodsEnum } from '@/enums/requestEnums'
 import { useUserStore } from '@/stores/user'
