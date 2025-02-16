@@ -1,6 +1,6 @@
 import { merge } from 'lodash-es'
 import { isFunction } from '@vue/shared'
-import { HttpRequestOptions, RequestConfig, RequestOptions, UploadFileOption } from './type'
+import type { HttpRequestOptions, RequestConfig, RequestOptions, UploadFileOption } from './type'
 import { RequestErrMsgEnum, RequestMethodsEnum } from '@/enums/requestEnums'
 import requestCancel from './cancel'
 
